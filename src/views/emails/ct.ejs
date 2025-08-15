@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Receipt</title>
+    <style>
+        /* Same CSS as your original template */
+        @page { size: A4; padding: 0; margin: 0; }
+        @font-face { font-family: Calibri; src: url(/font/Calibri-Font-Family/calibri.ttf); }
+        body { padding: 0; margin: 0; }
+        p, th, td, span, h1, h2, h3, h4, h5, h6 { font-family: 'Calibri' !important }
+        .card { margin-bottom: .5rem; background-color: #fff; border-radius: .75rem; box-shadow: 0 .3125rem .3125rem #523f690d; }
+        .card-body { padding: 1rem 1rem; }
+        .row { display: flex; width: 100%; flex-wrap: wrap; }
+        .col-md-6 { width: 50%; }
+        .col-md-9 { width: 75%; }
+        .col-md-3 { width: 25%; }
+        /* Keep your full CSS from original HTML here */
+    </style>
+</head>
+<body>
+<div class="card">
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6 logo-invoice">
+                <img src="/images/receiptlogo.png" alt="logo">
+            </div>
+            <div class="col-md-6 tax-invoice">
+                <h3>Receipt</h3>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6 invoice-details">
+                <table style="width:30%;text-align:left">
+                    <tbody>
+                        <tr><th>Bill To</th></tr>
+                        <tr><th><%= billingData.billingName %></th></tr>
+                        <tr><td><%= billingData.address %></td></tr>
+                    </tbody>
+                </table>
+                <table style="width:30%;text-align:left">
+                    <tbody>
+                        <tr><th>Mob:</th><td><%= billingData.phoneNo %></td></tr>
+                        <tr><th>GSTIN:</th><td><%= billingData.gstIn %></td></tr>
+                        <tr><th>PAN:</th><td><%= billingData.panNo %></td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="col-md-6">
+                <table style="width:50%;text-align:left">
+                    <tbody>
+                        <tr><th>Receipt No.</th><td><%= paymentData.receiptNo %></td></tr>
+                        <tr><th>Date</th><td><%= paymentData.payDate %></td></tr>
+                        <tr><th>Payment Date</th><td><%= paymentData.payDate %></td></tr>
+                        <tr><th>Payment mode</th><td><%= paymentData.paymentModeName %></td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="invoice-table-details mt-3 mb-2">
+            <div class="table-responsive">
+                <table class="invoice-table table" style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr>
+                            <th style="text-align:left">DESCRIPTION OF SERVICE</th>
+                            <th>DURATION</th>
+                            <th>NO. OF PAX</th>
+                            <th>AMOUNT</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <p><%= enquiryData.destinationId == 1 ? 'Domestic Tour' : 'International Tour' %></p>
+                                <p><%= enquiryData.groupName %></p>
+                            </td>
+                            <td style="text-align:center">
+                                <p><%= enquiryData.nights %> Nights</p>
+                                <p><%= enquiryData.days %> Days</p>
+                            </td>
+                            <td style="text-align:center">
+                                <p><%= familyDetails.paxPerHead %> Adults</p>
+                                <p>- childs</p>
+                            </td>
+                            <td style="text-align:center">₹<%= paymentData.advancePayment %></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="row invoice-discount">
+            <div class="col-md-9"></div>
+            <div class="col-md-3 invoice-word">
+                <table style="text-align:left;width:100%">
+                    <tbody>
+                        <tr><th>Grand Total:</th><td style="text-align:right">₹<%= billingData.grandTotal %></td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="row invoice-word mt-3">
+            <div class="col-md-9">
+                <p>Amount in words</p>
+                <h3><%= billingData.grandTotalInWords %> Only</h3>
+            </div>
+        </div>
+
+        <div class="row invoice-address mt-3 mb-3">
+            <div class="col-md-3">
+                <p><b>waari.in</b> is a Registered Brand of</p>
+                <p><b>Musmade Hospitality Pvt. Ltd.</b></p>
+                <p>Shop no: 7, LaCasita Complex,<br> Near TJSB Bank, Sector - 32A,<br>Ravet, Pune - 412101</p>
+            </div>
+            <div class="col-md-6"></div>
+            <div class="col-md-3 d-flex flex-column">
+                <img src="/images/waari_stamp.png" alt="stamp" width="120" class="m-auto">
+                <p class="text-center">For MUSMADE HOSPITALITY PVT. LTD.</p>
+            </div>
+        </div>
+
+        <div class="invoice-table-details mt-3">
+            <div class="table-responsive">
+                <table class="invoice-table table" style="border-top: 1px solid black;">
+                    <tbody>
+                        <tr><td>PAN: AAPCM4986P</td><td style="border-right:0">GSTIN: 27AAPCM4986P1Z9</td></tr>
+                        <tr><td>SAC: 998555 (Tour Operator)</td><td style="border-right:0">CIN: U63000PN2022PTC208864</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="invoice-note">
+            <ul>
+                <li>Terms & Conditions: For all the terms & conditions, please visit www.waari.in. Receipt Subject to Cheque Realisation</li>
+            </ul>
+        </div>
+
+        <div class="invoice-data mt-3 mb-3">
+            <h3 class="text-center">THANK YOU FOR CHOOSING <span class="invoice-color-blue">Waari.in</span> AS YOUR TRAVEL PARTNER</h3>
+        </div>
+
+        <div class="invoice-footer">
+            <div class="row">
+                <div class="col-md-6"><h2>Desh ka Travel Partner</h2></div>
+                <div class="col-md-6"><span>©2021-22 Musmade Hospitality Pvt Ltd. All Rights Reserved.</span></div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

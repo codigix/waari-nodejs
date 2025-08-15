@@ -1,0 +1,783 @@
+<!DOCTYPE html
+    PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Invoice</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <style>
+    @page {
+        size: A4;
+        padding: 0;
+        margin: 0;
+    }
+
+    @font-face {
+        font-family: Calibri;
+        font-style: normal;
+        font-weight: 400;
+        src: url(../font/Calibri-Font-Family/calibri.ttf) format('truetype');
+    }
+
+    @font-face {
+        font-family: Calibri;
+        font-style: normal;
+        font-weight: 500;
+        src: url(../font/Calibri-Font-Family/CALIBRIB.ttf) format('truetype');
+    }
+
+    body {
+        padding: 0;
+        margin: 0;
+    }
+
+    p,
+    th,
+    td,
+    span,
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        font-family: 'Calibri', sans serif !important
+    }
+
+    .card {
+        margin-bottom: .5rem;
+        background-color: #fff;
+        transition: all .5s ease-in-out;
+        position: relative;
+        border: 0rem solid transparent;
+        border-radius: .75rem;
+        box-shadow: 0 .3125rem .3125rem #523f690d;
+    }
+
+    .card-body {
+        padding: 2rem 2rem;
+    }
+
+    .row {
+        width: 100%;
+    }
+
+    .row .col-md-6 {
+        width: 50%
+    }
+
+    .mb-2 {
+        margin-bottom: .5rem !important;
+    }
+
+    .mt-3 {
+        margin-top: 0.7rem !important;
+    }
+
+    .table-responsive {
+        border-radius: .3rem;
+    }
+
+    .table thead th {
+        color: #000000ad;
+        font-weight: 600 !important;
+    }
+
+    .invoice-table {
+        border-color: #000 !important;
+    }
+
+    .invoice-table thead tr th {
+        border-bottom: 1px solid #000 !important;
+    }
+
+    .invoice-table tr th {
+        color: #000 !important;
+    }
+
+    .table thead th {
+
+        text-transform: capitalize;
+        font-size: 1.125rem;
+        white-space: nowrap;
+        font-weight: 500;
+        letter-spacing: .0313rem;
+        border-color: #ccc7c759 !important;
+    }
+
+    .invoice-table tbody tr:last-child>td {
+        border-bottom: 1px solid #000 !important;
+    }
+
+    .invoice-table tr td {
+        border-right: 1px solid #000;
+    }
+
+    .invoice-table tbody td {
+        text-transform: capitalize;
+    }
+
+    .invoice-table tr td {
+        border-color: #000 !important;
+        border-bottom: 1px solid #000 !important;
+    }
+
+    .logo-invoice img {
+        max-width: 100%;
+        margin: auto;
+        width: 120px;
+    }
+
+    .tax-invoice h3 {
+        color: #076fb0;
+        font-size: 2.2em;
+        font-weight: 600;
+        margin-bottom: 0;
+        line-height: 1;
+        font-family: 'Calibri', sans serif !important
+    }
+
+    .invoice-details p,
+    .invoice-details table tbody th {
+        color: #000 !important;
+        font-weight: 600;
+    }
+
+    .invoice-details .address,
+    .invoice-details table tbody td {
+        width: 85%;
+        margin-bottom: 0;
+        font-size: .95rem;
+        color: #000000a3 !important;
+        line-height: 1;
+        font-weight: 400;
+    }
+
+    .invoice-table td {
+        font-weight: bolder;
+        color: #000000c4 !important;
+    }
+
+    .tax-invoice p,
+    .invoice-details p,
+    .invoice-details-contact p,
+    .invoice-words p,
+    .invoice-address p,
+    .invoice-table td {
+
+        color: #000 !important;
+        line-height: 1;
+    }
+
+    .table th,
+    .table td {
+        padding: .5375rem .325rem !important;
+    }
+
+    .col-md-9 {
+        flex: 0 0 auto;
+        width: 75%;
+    }
+
+    .col-md-3 {
+        flex: 0 0 auto;
+        width: 25%;
+    }
+
+    .justify-content-between {
+        justify-content: space-between !important;
+    }
+
+    .d-flex {
+        display: flex !important;
+    }
+
+    .d-block {
+        display: block !important;
+    }
+
+    .mb-0 {
+        margin-bottom: 0 !important;
+    }
+
+    p {
+        line-height: 1;
+    }
+
+    .invoice-word h3 {
+        font-weight: 700;
+        font-size: 1.2rem;
+    }
+
+    .invoice-word th,
+    .invoice-word td {
+        font-weight: 700;
+        font-size: 1.2rem;
+    }
+
+    .invoice-word td p {
+        font-size: 1.12rem;
+        color: #000 !important;
+        line-height: 1.2;
+        margin:0 !important
+    }
+
+    .flex-column {
+        flex-direction: column !important;
+    }
+
+    .m-auto {
+        margin: auto
+    }
+
+    .text-center {
+        text-align: center
+    }
+
+    .invoice-note ul {
+        list-style: none;
+        padding-left: 0;
+        margin: 0
+    }
+
+    .invoice-data h3 {
+        font-size: 2rem;
+        font-weight: 600;
+        line-height: 1.3;
+    }
+
+    .invoice-color-blue {
+        color: #076fb0;
+        font-size: 1.3rem;
+        line-height: 1.3;
+        font-weight: 900;
+    }
+
+    .invoice-footer h2 {
+        color: #076fb0;
+        font-style: italic;
+        font-size: 1.3rem;
+        line-height: 1.3;
+        font-weight: 700;
+    }
+
+    .invoice-footer span {
+        color: #000000bd;
+        font-size: 1rem;
+    }
+
+    p {
+        font-weight: 400
+    }
+    </style>
+</head>
+
+<body>
+    <div class="card">
+        <div class="card-body">
+
+            <table style="width:100%;">
+                <thead>
+                    <tr>
+                        <th class=" logo-invoice " style="text-align:left;width:50%"><img src="images/receiptlogo.png"
+                                alt="logo"></th>
+                        <td style="text-align:left;width:50%;position:relative">
+                            <div class="tax-invoice">
+                                <h3 style="margin-top:0;font-family:'Calibri', sans serif !important">Tax Invoice</h3>
+                            </div>
+                            <table style="width:50%;">
+                                <tbody>
+                                    <tr>
+                                        <td style="width:50%;margin:0;text-align:left">
+                                            <p
+                                                style="margin:0;font-size: 0.95rem;font-family:'Calibri', sans serif !important">
+                                                Invoice No.</p>
+                                        </td>
+                                        <td style="width:50%;margin:0;text-align:left">
+                                            <p
+                                                style="margin:0;font-size: 0.95rem;font-family:'Calibri', sans serif !important">
+                                                TIN{{$billingData->invoiceNo}}</p>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="width:50%;margin:0;text-align:left">
+                                            <p
+                                                style="margin:0;font-size: 0.95rem;font-family:'Calibri', sans serif !important">
+                                                Date</p>
+                                        </td>
+                                        <td style="width:50%;margin:0;text-align:left">
+                                            <p
+                                                style="margin:0;font-size: 0.95rem;font-family:'Calibri', sans serif !important">
+                                                {{ \Carbon\Carbon::parse($billingData->created_at)->format('Y-m-d') }}
+
+</p>
+                                        </td>
+                                    </tr>
+
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+                </thead>
+            </table>
+            <div class="row" style="margin-top:20px">
+                <div class="">
+                    <table style="width:100%;">
+                        <tr>
+                            <th style="width:50%;text-align:left ">
+                                <table style="width:100%">
+                                    <tbody>
+                                        <tr>
+                                            <td style="width:50%;margin:0;text-align:left">
+                                                <p
+                                                    style="margin:0;font-size: 0.95rem;font-family:'Calibri', sans serif !important">
+                                                    Bill To</p>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th style="width:50%;margin:0;text-align:left">
+                                                <p
+                                                    style="margin:0;font-size: 0.95rem;font-family:'Calibri', sans serif !important;font-weight:500">
+                                                    {{ $billingData->billingName }}
+                                                </p>
+
+                                            </th>
+                                        </tr>
+                                        <tr>
+                                            <td style="width:50%;margin:0;text-align:left">
+                                                <p
+                                                    style="margin:0;font-size: 0.95rem;font-family:'Calibri', sans serif !important">
+                                                    {{ $billingData->address }}
+                                                </p>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <table style="width:20%">
+                                    <tbody>
+                                        <tr>
+                                            <td style="width:30%;margin:0;text-align:left">
+                                                <p
+                                                    style="margin:0;font-size: 0.95rem;font-family:'Calibri', sans serif !important">
+                                                    Mob:</p>
+                                            </td>
+                                            <td style="width:50%;margin:0;text-align:left">
+                                                <p
+                                                    style="margin:0;font-size: 0.95rem;font-family:'Calibri', sans serif !important">
+                                                    {{ $billingData->phoneNo }}</p>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="width:30%;margin:0;text-align:left">
+                                                <p
+                                                    style="margin:0;font-size: 0.95rem;font-family:'Calibri', sans serif !important">
+                                                    GSTIN:</p>
+                                            </td>
+                                            <td style="width:50%;margin:0;text-align:left">
+                                                <p
+                                                    style="margin:0;font-size: 0.95rem;font-family:'Calibri', sans serif !important">
+                                                    {{ $billingData->gstIn }}</p>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="width:30%;margin:0;text-align:left">
+                                                <p
+                                                    style="margin:0;font-size: 0.95rem;font-family:'Calibri', sans serif !important">
+                                                    PAN:
+                                                </p>
+                                            </td>
+                                            <td style="width:50%;margin:0;text-align:left">
+                                                <p
+                                                    style="margin:0;font-size: 0.95rem;font-family:'Calibri', sans serif !important">
+                                                    {{$billingData->panNo}}</p>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </th>
+                            <th style="width:50%;text-align:left;vertical-align:top">
+                                <table style="width:80%;">
+                                    <tr>
+                                        <td style="width:45%;margin:0;text-align:left">
+                                            <p
+                                                style="margin:0;font-size: 0.95rem;font-family:'Calibri', sans serif !important;font-weight:500">
+                                                Advance Receipts
+                                            </p>
+                                        </td>
+
+                                    </tr>
+                                    @foreach($paydetails as $index => $pay)
+                                    <tr>
+                                        <td  style="width:45%;margin:0;text-align:left">
+                                            <p
+                                                style="margin:0;font-size: 0.95rem;font-family:'Calibri', sans serif !important">
+                                                Receipt No {{ $index + 1 }}</p>
+                                        </td>
+                                        <td  style="width:55%;margin:0;text-align:left">
+                                            <p
+                                                style="margin:0;font-size: 0.95rem;font-family:'Calibri', sans serif !important">
+                                                RN{{ $pay->receiptNo }}</p>
+                                        </td>
+                                    </tr>
+                                    @endforeach
+
+                                </table>
+                            </th>
+                        </tr>
+                    </table>
+
+                </div>
+                <div class="col-md-6 ">
+
+                </div>
+            </div>
+            <!-- <div class="row">
+                <div class="col-md-6 invoice-details">
+                    <table style="width:30%;text-align:left ">
+                        <tbody>
+                            <tr>
+                                <th>Bill To</th>
+                            </tr>
+                            <tr>
+                                <th></th>
+                            </tr>
+                            <tr>
+                                <td></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <table style="width:30%;text-align:left">
+                        <tbody>
+                            <tr>
+                                <th>Mob:</th>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <th>GSTIN:</th>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <th>PAN:</th>
+                                <td></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="col-md-6 ">
+                  
+                    <table style="width:50%;text-align:left mt-3">
+                        <tbody>
+                            <tr>
+                                <th></th>
+
+                            </tr>
+                            @foreach($paydetails as $index => $pay)
+                            <tr>
+                                <th>Receipt No {{ $index + 1 }}</th>
+                                <td>{{ $pay->receiptNo }}</td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            </div> -->
+            <div class="invoice-table-details mt-3  mb-2">
+                <div class="table-responsive">
+                    <table class="invoice-table table" style="width: 100%; border-collapse: collapse;">
+                        <thead>
+                            <tr>
+                                <td
+                                    style="text-align:left;font-family:'Calibri', sans serif !important;font-weight:600;border-right:0 !important;">
+                                    DESCRIPTION OF SERVICE</td>
+                                <td
+                                    style="text-align:center;font-family:'Calibri', sans serif !important;font-weight:600;border-right:0 !important;">
+                                    DURATION</td>
+                                <td
+                                    style="text-align:center;font-family:'Calibri', sans serif !important;font-weight:600;border-right:0 !important;">
+                                    NO. OF PAX</td>
+                                <td
+                                    style="text-align:center;font-family:'Calibri', sans serif !important;font-weight:600;border-right:0 !important;">
+                                    AMOUNT</td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td style=" padding: 8px;">
+                                    <p
+                                        style="margin: 0;line-height:1.5;font-family:'Calibri', sans serif !important;font-weight:600">
+                                        {{ $enquiryData->destinationId == 1 ? 'Domestic Tour' : 'International Tour' }}
+                                    </p>
+                                    <p
+                                        style="margin: 0;line-height:1.5;font-family:'Calibri', sans serif !important;font-weight:600">
+                                        {{ $enquiryData->groupName }}</p>
+                                </td>
+                                <td style=" padding: 8px; text-align: center;">
+                                    <p
+                                        style="margin: 0;line-height:1.5;font-family:'Calibri', sans serif !important;font-weight:600">
+                                        {{ $enquiryData->nights }} Nights</p>
+                                    <p
+                                        style="margin: 0;line-height:1.5;font-family:'Calibri', sans serif !important;font-weight:600">
+                                        {{ $enquiryData->days }} Days</p>
+                                </td>
+                                <td style=" padding: 8px; text-align: center;">
+                                    <p
+                                        style="margin: 0;line-height:1.5;font-family:'Calibri', sans serif !important;font-weight:600">
+                                        {{ $familyDetails->paxPerHead }} Adult(s)</p>
+                                    <p
+                                        style="margin: 0;line-height:1.5;font-family:'Calibri', sans serif !important;font-weight:600">
+                                        - childs</p>
+                                </td>
+                                <td
+                                    style="padding: 8px; text-align: center;line-height:1.5;font-family:'Calibri', sans serif !important;border-right:0 !important;font-weight:600;position:relative">
+                                    <img src="images/rupee.png" style="width:12px;margin:auto"/>  <span>{{ $pays->advancePayment }}</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="row invoice-discount " style="width:100%;margin-bottom:1rem">
+                <div class="inovice-visible" style="width:60%">
+                    <table style="text-align:left;width:100%;margin-bottom:0.5rem">
+                        <tbody>
+                            <tr>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="invoice-word" style="width:40%;float:right">
+                    <table style="text-align:left;width:100%;margin-bottom:0.5rem">
+                        <tbody>
+                            <tr>
+                                <td style="text-align:left ; ">
+                                    <p
+                                        style="margin: 0;line-height:1.3;font-family:'Calibri', sans serif !important;font-weight:600;font-size:0.95rem">
+                                        DISCOUNT:
+                                    </p>
+                                    </th>
+                                <td style="text-align:right  ">
+                                    <p
+                                        style="margin: 0;line-height:1.3;font-family:'Calibri', sans serif !important;font-weight:600;font-size:0.95rem;position:relative">
+                                        <img src="images/rupee.png" style="width:12px;margin:auto"/>  <span>{{ $billingData->additionalDis }}</span>
+                                    </p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="text-align:left ; ">
+                                    <p
+                                        style="margin: 0;line-height:1.3;font-family:'Calibri', sans serif !important;font-weight:600;font-size:0.95rem">
+                                        TAXABLE AMOUNT:
+                                    </p>
+                                    </th>
+                                <td style="text-align:right  ">
+                                    <p
+                                        style="margin: 0;line-height:1.3;font-family:'Calibri', sans serif !important;font-weight:600;font-size:0.95rem;position:relative">
+                                        <img src="images/rupee.png" style="width:12px;margin:auto"/>  <span>{{ $billingData->discountPrice }}</span>
+                                    </p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="text-align:left ; ">
+                                    <p
+                                        style="margin: 0;line-height:1.3;font-family:'Calibri', sans serif !important;font-weight:600;font-size:0.95rem">
+                                        CGST @ 2.5%
+                                    </p>
+                                    </th>
+                                <td style="text-align:right  ">
+                                    <p
+                                        style="margin: 0;line-height:1.4;font-family:'Calibri', sans serif !important;font-weight:600;font-size:0.95rem;position:relative">
+                                        <img src="images/rupee.png" style="width:12px;margin:auto"/>  <span>{{ $billingData->gst/2 }}</span>
+                                    </p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="text-align:left ; ">
+                                    <p
+                                        style="margin: 0;line-height:1.4;font-family:'Calibri', sans serif !important;font-weight:600;font-size:0.95rem">
+                                        SGST @ 2.5%
+                                    </p>
+                                    </th>
+                                <td style="text-align:right  ">
+                                    <p
+                                        style="margin: 0;line-height:1.4;font-family:'Calibri', sans serif !important;font-weight:600;font-size:0.95rem;position:relative">
+                                        <img src="images/rupee.png" style="width:12px;margin:auto"/>  <span> {{ $billingData->gst/2 }}</span>
+                                    </p>
+                                </td>
+                            </tr>
+                            @if($enquiryData->destinationId == 2)
+                            <tr>
+                                <td style="text-align:left ; ">
+                                    <p
+                                        style="margin: 0;line-height:1.4;font-family:'Calibri', sans serif !important;font-weight:600;font-size:0.95rem">
+                                        TCS @ 5%
+                                    </p>
+                                    </th>
+                                <td style="text-align:right  ">
+                                    <p
+                                        style="margin: 0;line-height:1.4;font-family:'Calibri', sans serif !important;font-weight:600;font-size:0.95rem;position:relative">
+                                        <img src="images/rupee.png" style="width:12px;margin:auto"/>  <span> {{ $billingData->tcs }}</span>
+                                    </p>
+                                </td>
+                            </tr>
+                            @endif
+                            <tr style="border-top:1px">
+                                <td style="text-align:left ;    border-top: 1px solid #000;padding:10px ">
+                                    <p
+                                        style="margin: 0;line-height:1.4;font-family:'Calibri', sans serif !important;font-weight:600;font-size:0.95rem">
+                                        Grand Total:
+                                    </p>
+                                    </th>
+                                <td style="text-align:right;    border-top: 1px solid #000;padding:10px  ">
+                                    <p
+                                        style="margin: 0;line-height:1.4;font-family:'Calibri', sans serif !important;font-weight:600;font-size:0.95rem;position:relative">
+                                        <img src="images/rupee.png" style="width:12px;margin:auto"/>  <span>{{ $billingData->grandTotal }}</span>
+                                    </p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class=" mt-3 mb-3" style="width:100%">
+                <table style="text-align:left;width:100%;margin-bottom:0.5rem">
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <p
+                                        class="margin:0 !important;font-family:'Calibri', sans serif !important;font-size:1rem">
+                                        Amount in words</p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <h3 class="mb-0"
+                                        style="margin:0;text-transform: capitalize;font-family:'Calibri', sans serif !important;font-size:1rem;line-height:1.1">
+                                        {{ $billingData->grandTotalInWords }} Only
+                                    </h3>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>   
+            </div>
+            <div class="invoice-address mt-3 mb-3">
+                <table style="width:100%;margin-bottom:0.5rem">
+                    <tbody>
+                        <tr>
+                            <td style="text-align:left;width:70%">
+                                <table style="text-align:left;width:100%">
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                <p class="mb-0"
+                                                    style="margin-top:0;font-family:'Calibri', sans serif !important;line-height:1.35;font-size:0.95rem">
+                                                    <b>waari.in</b> is a Registered Brand of
+                                                </p>
+                                                <p class="mb-0"
+                                                    style="margin-top:0;font-family:'Calibri', sans serif !important;line-height:1.1;font-size:0.95rem">
+                                                    <b>Musmade Hospitality Pvt.
+                                                        Ltd.</b>
+                                                </p>
+                                                <p class="mb-0"
+                                                    style="margin-top:0;font-family:'Calibri', sans serif !important;line-height:1.1;font-size:0.95rem">
+                                                    Shop no: 7, LaCasita Complex,<br>
+                                                    Near TJSB Bank,
+                                                    Sector -
+                                                    32A,<br>Ravet, Pune -
+                                                    412101</p>
+                                                </p>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </td>
+                            <td style="text-align:center;width:30%;margin:auto">
+                                <img src="images/waari_stamp.png" alt="stamp" width="100" class="m-auto">
+                                <p
+                                    class="mb-0 text-center;font-family:'Calibri', sans serif !important;font-size:0.8rem !important">
+                                    For MUSMADE
+                                    HOSPITALITY PVT. LTD.</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <!-- <div class="col-md-6 inovice-none"></div>
+            <div class="col-md-3 d-flex justify-content-end flex-column">
+                <img src="images/waari_stamp.png" alt="stamp" width="120" class="m-auto">
+                <p class="mb-0 text-center">For MUSMADE HOSPITALITY PVT. LTD.</p>
+            </div> -->
+            </div>
+
+            <div class="invoice-table-details mt-3">
+                <div class="table-responsive">
+                    <table class="invoice-table table"
+                        style="border-top: 1px solid rgb(0, 0, 0); margin-bottom: 0px;width:100%">
+                        <tbody>
+                            <tr>
+                                <td style="font-family:'Calibri', sans serif !important;">PAN: AAPCM4986P</td>
+                                <td style="border-right:0 !important;font-family:'Calibri', sans serif !important;">
+                                    GSTIN:
+                                    27AAPCM4986P1Z9</td>
+                            </tr>
+                            <tr>
+                                <td style="font-family:'Calibri', sans serif !important;">SAC: 998555 (Tour Operator)
+                                </td>
+                                <td style="border-right:0 !important;font-family:'Calibri', sans serif !important;">CIN:
+                                    U63000PN2022PTC208864</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="invoice-note">
+                    <ul>
+                        <li style="font-family:'Calibri', sans serif !important;font-size:0.95rem">
+                            <span>Terms &amp; Conditions: For all the terms &amp; conditions, please visit www.waari.in
+                                .Receipt Subject to Cheque Realisation</span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="invoice-data mt-3 mb-3">
+                    <h3 class="text-center"
+                        style="font-size:1.2rem;text-align:center;font-family:'Calibri', sans serif !important;">THANK
+                        YOU
+                        FOR CHOOSING <span class="invoice-color-blue">Waari.in</span> AS YOUR
+                        TRAVEL PARTNER</h3>
+                </div>
+                <div class="invoice-footer">
+                    <table style="width:100%;">
+                        <tbody>
+                            <tr>
+                                <td style="width:40%;text-align:left;font-family:'Calibri', sans serif !important;">
+                                    <h2>Desh ka Travel Partner</h2>
+                                </td>
+                                <td style="width:60%;text-align:right">
+                                    <span style="font-size:0.8rem">©2021-22 Musmade Hospitality Pvt Ltd. All Rights
+                                        Reserved.</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <!-- <div class="row">
+                <div class="col-md-6">
+                    <h2>Desh ka Travel Partner</h2>
+                </div>
+                <div class="col-md-6">
+                    <span>©2021-22 Musmade Hospitality Pvt Ltd. All Rights Reserved.</span>
+                </div>
+            </div> -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>

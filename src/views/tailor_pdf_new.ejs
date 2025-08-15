@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <style>
+        @font-face {
+            font-family: "Jost", sans-serif;
+            src: url("{{ storage_path('fonts/Jost-Regular.ttf') }}") format('truetype');
+        }
+
+        @font-face {
+            font-family: "Jost", sans-serif;
+            src: url("{{ storage_path('fonts/Jost-Light.ttf') }}") format('truetype');
+        }
+
+        @font-face {
+            font-family: "playfair", serif;
+            /* src: url(../public/font/Juanaregular.ttf); */
+            src: url("{{ storage_path('fonts/PlayfairDisplay-Regular.ttf') }}") format("truetype");
+        }
+
+        /* @font-face {
+            font-family: 'AvenirNextCyr-Regular';
+            /* src: url(../public/font/AvenirNextCyr-Regular.otf); */
+            /* src: url("{{ storage_path('fonts/AvenirNextCyr-Regular.ttf') }}") format("truetype");
+        } */ */
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Jost", sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+      
+
+        .page {
+            position: relative;
+            text-align: center;
+            max-width: 100%;
+            width: 2440px;
+            max-height: 100%;
+            height: 3508px;
+            margin: 0 auto;
+        }
+
+        .page1 {
+            background-image: url('{{ asset($tailormadesdata->bgImage) }}');
+            background-position: center;
+            background-size: cover;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* .page2{
+            background-image: url('{{ $target002 }}');
+            background-position: center;
+            background-size: contain;
+        } */
+
+        .page2 img {
+            object-fit: fill;
+            max-width: 100%;
+            width: 2480px;
+            max-height: 100%;
+            height: 3508px;
+            margin: 0;
+            transform: scale(150%);
+        }
+
+        .mainLogo {
+            padding-bottom: 5rem;
+            background-color: transparent;
+        }
+
+        .mainLogo {
+            background-color: transparent;
+            padding: 2rem;
+        }
+
+        .mainLogo .main-logo {
+            background-color: transparent;
+        }
+
+        .mainLogo .main-logo img {
+            background-color: transparent;
+            width: 150px;
+        }
+
+        .tour-name {
+            font-family: "playfair", serif;
+            font-size: 80px;
+            color: #ffffff;
+            text-transform: capitalize;
+            line-height: 1.2;
+           
+        }
+
+        .cities-list {
+            font-size: 24px;
+            color: #ffffff;
+            margin-top: 10px;
+            margin-bottom: 30px;
+        }
+
+        .journey-info-table {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+           
+        }
+
+        .journey-info-table th {
+            border: 1px solid #fff;
+            padding: 15px 30px;
+            font-size: 20px;
+        }
+
+        .journey-info-table .premium {
+            font-weight: 600;
+            color: #ffffff;
+            background-color: transparent;
+        }
+
+        .journey-info-table .nights-days {
+            font-weight: 400;
+            color: #014058;
+            background-color: #fff;
+        }
+
+        .experiences-table {
+            background: #024059;
+            padding: 16px 32px;
+            border-radius: 5px;
+        }
+
+        .experiences-table th {
+            font-size: 20px;
+            font-weight: 400;
+            color: #ffffff;
+        }
+
+        table {
+            margin-left: auto;
+            margin-right: auto;
+            /* width: 80%; */
+            /* Adjust the width as necessary */
+            /* text-align: center; */
+        }
+
+        .page2 table {
+            text-align: center;
+        }
+
+        .itinerary {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            gap: 20px;
+           
+        }
+
+        .itinerary .itinerary-list {
+            width: 756px;
+            height: 440px;
+            display: flex;
+            margin-top: 20px;
+            justify-content: flex-start;
+            align-items: flex-start;
+            border: 1px solid red;
+            position: relative !important;
+            /* Ensure position relative */
+        }
+
+        .itinerary .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            /* Make the overlay cover the entire parent */
+            height: 100%;
+            /* Cover the entire height of the parent */
+            z-index: 99999;
+            background-color: rgba(0, 0, 0, 0.6);
+        }
+
+        table {
+            display: block !important;
+        }
+
+        table tr {
+            display: block !important;
+        }
+
+        table tr td {
+            display: block !important;
+            text-align: left;
+        }
+
+        .strokeLine::after {
+            position: absolute;
+            top: 25px;
+            z-index: 9999;
+            left: 0;
+            width: 100px;
+            height: 1px;
+            border-bottom: 1px solid black;
+        }
+
+        .spectral-extralight {
+            font-family: "playfair", serif;
+            font-weight: 200;
+            font-style: normal;
+        }
+        .itinerary-description td div ul li{
+            margin-bottom: 20px !important;
+            padding-bottom: 20px !important;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="page1-div" class="page page1">
+        <!-- Main Logo -->
+        <div class="mainLogo">
+            <table cellspacing="0" cellpadding="0">
+                <thead>
+                    <tr>
+                        <th class="main-logo" style="background-color: transparent; padding: 0;">
+                            <img src="{{ $mainlogo }}" class="" style="width: 150px;">
+                        </th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+
+
+        <!-- Tour Name -->
+        <p class="tour-name spectral-extralight " >{{ $tailormadesdata->tourName }}</p>
+
+        <!-- Cities List -->
+        <div class="cities-list">
+            @foreach ($cities as $city)
+                <span>{{ $city->citiesName }}</span>
+                @if (!$loop->last)
+                    &nbsp;|&nbsp;
+                @endif
+            @endforeach
+        </div>
+
+        <!-- Journey Info Table -->
+        <div class="journey-info-table">
+            <table cellspacing="0" cellpadding="0">
+                <thead>
+                    <tr>
+                        <th class="premium spectral-extralight">Premium Tailor Journeys</th>
+                        <th class="nights-days">{{ $tailormadesdata->night }} Nights {{ $tailormadesdata->days }} Days
+                        </th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+
+        <!-- Unique Experiences Table -->
+        @if($tailormadesdata->uniqueExperience != 0 && $tailormadesdata->uniqueExperience != null)
+        <table cellspacing="0" cellpadding="0" class="experiences-table ">
+            <thead>
+                <tr>
+                    <th class="spectral-extralight">{{ $tailormadesdata->uniqueExperience }} Unique Experiences</th>
+                </tr>
+            </thead>
+        </table>
+        @endif
+
+    </div>
+    <div id="page2-div" class="page page2">
+        <table border="0" cellspacing="0" cellpadding="0" style="width:100%; height:100%; margin:0; padding:0;">
+            <tr>
+                <td>
+                    <img src="{{ $target002 }}" alt="background image" />
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div id="page3-div" class="page page2">
+        <table border="0" cellspacing="0" cellpadding="0" style="width:100%; height:100%">
+            <tr>
+                <td>
+                    <img src="{{ $target003 }}" alt="background image" />
+                </td>
+            </tr>
+
+        </table>
+    </div>
+    <div id="page4-div" class="page page2">
+        <table border="0" cellspacing="0" cellpadding="0" style="width:100%; height:100%">
+            <tr>
+                <td>
+                    <img src="{{ $target004 }}" alt="background image" />
+                </td>
+            </tr>
+
+        </table>
+    </div>
+
+    <!-- Day Itinerary Section -->
+    @foreach($detailedItinerary as $index => $itinerary)
+        <div id="page6-div" class="page"
+            style="width:100%;height:1346.45px;background-image:url('{{ $target015 }}'); background-position:center; background-size:cover;">
+
+            <table border="0" cellspacing="0" cellpadding="0" style="width:100%; height:1346.45px; ">
+                <tr>
+                    <td style="display: block; position: relative; vertical-align: top;">
+
+                        <!-- Day Banner Section -->
+                        <table border="0" cellspacing="0" cellpadding="0"
+                            style="width:100%; background-image:url('{{ $itinerary->bannerImage }}'); height: 900px; background-size:cover; background-position:center; background-repeat:no-repeat;">
+
+                            <!-- Row for the Centered Logo -->
+                            <tr>
+    <td style="text-align: center; height: 500px; vertical-align: top; padding-top: 40px;">
+        <div style="padding-top: 40px;">
+            <img src="{{ $mainlogo }}" alt="logo image" style="width: 20%; margin-top: 0;" />
+        </div>
+    </td>
+</tr>
+
+
+                            <!-- Row for the Left-Aligned Text (Day and Title) -->
+                            <tr>
+                                <td style="padding-left: 96px; padding-bottom: 30px;font-family:'playfair', serif">
+                                    <!-- Left padding for the text -->
+                                    <p style="font-size: 86px; color: #d1a550; margin: 0; font-family:'playfair', serif; ">
+                                        Day {{ $index + 1 }}
+                                    </p>
+                                    <p
+                                        style="text-transform: capitalize; font-size: 36px; color: #ffffff; margin-top: 10px;">
+                                        {{ $itinerary->title }}
+                                    </p>
+                                </td>
+                            </tr>
+
+                        </table>
+
+                    </td>
+                </tr>
+
+                <!-- Day Itinerary Description -->
+                <tr class="itinerary-description">
+                    <td
+                        style="font-size:24px;line-height:40px;color: #000000;Font-weight:400;padding-bottom:10px;padding-top:60px;padding-left:96px;padding-right:96px;height: 650px;vertical-align: top;">
+                        <div style="margin: 0;padding: 0; text-align: left;">
+
+                            {!! htmlspecialchars_decode(html_entity_decode($itinerary->description)) !!}
+                        </div>
+                    </td>
+                </tr>
+
+                <!-- Meals and Overnight Section -->
+                <tr>
+                    <td style="padding-left:96px; width:760px; vertical-align: center;">
+                        <table style="width:758px;">
+                            <tr>
+                                <td style="width:45%; vertical-align: center;line-height:50px; padding-top: 25px;">
+                                    <table style="width:100%;">
+                                        <tr>
+                                            <td style="width:100%; text-align:left;line-height:50px;">
+                                                <p
+                                                    style="font-size:36px;color:#024059;font-family:'Playfair Display', serif;">
+                                                    Meals:</p>
+                                                <p style="font-size:24px;color:#000;font-family: 'AvenirNextCyr-Regular';">
+                                                    @php
+                                                        $mealTypes = json_decode($itinerary->mealTypeId);
+                                                        echo implode(', ', $mealTypes);
+                                                    @endphp
+                                                </p>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                    <table style="width:100%;">
+                                        <tr>
+                                            <td style="padding-top: 25px;width:100%; text-align:left;line-height:50px;">
+                                                <p
+                                                    style="font-size:36px;color:#024059;font-family:'Playfair Display', serif;">
+                                                    Overnight:</p>
+                                                <p style="font-size:24px;color:#000;font-family: 'AvenirNextCyr-Regular';">
+                                                    {{ $itinerary->nightStayAt }}
+                                                </p>
+                                            </td>
+                                        </tr>
+                                    </table>
+
+
+                                </td>
+                                <td style="width:55%; vertical-align: center;line-height:45px; text-align:right;">
+                                    <img src="{{ $itinerary->hotelImage }}" alt="hotel image"
+                                        style="width:520px; height:280px; object-fit:cover; " />
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    @endforeach
+
+
+
+
+    <div id="page2-div" class="page page2">
+        <table border="0" cellspacing="0" cellpadding="0" style="width:100%; height:100%; margin:0; padding:0;">
+            <tr>
+                <td>
+                    <img src="{{ $target008 }}" alt="background image" />
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <div id="page9-div"
+        style="padding:30px 30px 0;position:relative;width:756px;max-height:100%;height:100%;margin:0 auto;background-image:url('{{ $target015 }}');background-position:center;background-size:100% 100%">
+        <table border="0" cellspacing="0" cellpadding="0" style="text-align:left;width:756px; padding:35px 0;">
+            <tr style="text-align:left;">
+                <th style="text-align:left;font-weight:300;">
+                    <p class="spectral-extralight"
+                        style=" font-size:24px; color:#014058;text-align:left; font-weight:300;font-weight:300;">
+                        Certifications And Memberships:</p>
+                </th>
+            </tr>
+        </table>
+        <table class="table-certificate" border="0" cellspacing="0" cellpadding="0"
+            style="width:756px; margin-top:15px; margin-bottom:15px; padding: 0px 50px;">
+            <tr>
+                <td style="padding:8px; width:350px;">
+                    <div><img src="{{ $logo16 }}" alt="background image" style="width:350px;" />
+                    </div>
+                </td>
+                <td style="padding:10px; width:215px">
+                    <div><img src="{{ $logo11 }}" alt="background image" style="width:215px;" /></div>
+                </td>
+                <td style="padding:10px; width:200px">
+                    <div><img src="{{ $logo15 }}" alt="background image" style="width:200px;" /></div>
+                </td>
+            </tr>
+            <tr>
+                <td style="padding: 10px; width:350px;">
+                    <div><img src="{{ $logo13 }}" alt="background image" style="width:350px;" /></div>
+                </td>
+                <td style="padding:10px; width:215px;">
+                    <div><img src="{{ $logo14 }}" alt="background image" style="width:215px;" /></div>
+                </td>
+                <td style="padding:10px; width:200px;">
+                    <div><img src="{{ $logo12 }}" alt="background image" style="width:200px;" /></div>
+                </td>
+            </tr>
+        </table>
+        <table border="0" cellspacing="4" cellpadding="0" style="width:100%;">
+            <tr>
+                <td class="spectral-extralight"
+                    style=" font-size:30px; color: #014058; text-align:left; margin: 0;  padding-bottom: 10px; font-weight:300;">
+                    Journey Pricing <span
+                        style="font-size:18px; color: #000; margin: 0 0 12px; font-family: 'AvenirNextCyr', sans-serif !important;font-weight:400;">
+                       </span></td>
+            </tr>
+        </table>
+        <table cellspacing="0" cellpadding="0" style="width:100%; border:1px solid #024059; overflow:hidden;">
+            <thead style="background-color:#024059; color:#ffffff;">
+                <tr>
+                    <th class="spectral-extralight"
+                        style="font-size:18px;  font-weight:300; width:40%; padding:20px; text-align:left; border:0px solid #024059; border-bottom:2px solid #024059;background-color: #024059;color:#ffffff;">
+                        Room Type </th>
+                    <th class="spectral-extralight"
+                        style="font-size:18px;  font-weight:300; width:40%; padding:20px; text-align:left; border:0px solid #024059; border-bottom:2px solid #024059;background-color: #024059;color:#ffffff;">
+                        Destination </th>
+                    <th class="spectral-extralight"
+                        style="font-size:18px;  font-weight:300; width:40%; padding:20px; text-align:left; border:0px solid #024059; border-bottom:2px solid #024059;background-color: #024059;color:#ffffff;">
+                        Hotel Name </th>
+                    <th class="spectral-extralight"
+                        style="font-size:18px;  font-weight:300; width:25%; padding:20px; text-align:center; border:0px solid #024059; border-bottom:2px solid #024059;background-color: #024059;color:#ffffff;">
+                        Tour Price </th>
+                    <th class="spectral-extralight"
+                        style="font-size:18px;  font-weight:300; width:35%; padding:20px; text-align:left; border:0px solid #024059; border-bottom:2px solid #024059;background-color: #024059;color:#ffffff;">
+                        Offer Price </th>
+                </tr>
+            </thead>
+            <tbody>
+            @foreach($tourPrice as $tp)
+                <tr>
+                    @if($tp->type==0)
+                    <td style="padding:10px 14px; border-bottom:1px solid #024059; font-size:16px; color: #000;">
+                        <p style="font-family: 'Jost', sans-serif; margin:0;font-weight:400 !important;">
+                        Deluxe
+                        </p>
+                    </td>
+                    @elseif($tp->type==1)
+                    <td style="padding:10px 14px; border-bottom:1px solid #024059; font-size:16px; color: #000;">
+                        <p style="font-family: 'Jost', sans-serif; margin:0;font-weight:400 !important;">
+                        Super Deluxe
+                        </p>
+                    </td>
+                    @elseif($tp->type==2)
+                    <td style="padding:10px 14px; border-bottom:1px solid #024059; font-size:16px; color: #000;">
+                        <p style="font-family: 'Jost', sans-serif; margin:0;font-weight:400 !important;">
+                        Premium
+                        </p>
+                    </td>
+                    @endif
+                    <td style="padding:10px 14px; border-bottom:1px solid #024059; font-size:16px; color: #000;">
+                        <p style="font-family: 'Jost', sans-serif; margin:0;font-weight:400 !important;">
+                            {{$tp->destination}}
+                        </p>
+                    </td>
+                    <td style="padding:10px 14px; border-bottom:1px solid #024059; font-size:16px; color: #000;">
+                        <p style="font-family: 'Jost', sans-serif; margin:0;font-weight:400 !important;">
+                            {{$tp->hotelName}}
+                        </p>
+                    </td>
+                    <td
+                        style="font-family: 'Jost', sans-serif !important; font-size:16px; padding:10px 14px; color:#393939;border-bottom:1px solid #024059; text-align:center;
+                            background: url('{{ $lineImg }}') ;background-repeat: no-repeat;background-position: center; background-size: 100px 0.5px;">
+
+                        <!-- Centered Text with Line Background -->
+                        <span style="font-weight: 400; z-index: -2; padding: 0 10px;">
+                            ₹ {{$tp->tourPrice}}
+                        </span>
+
+                    </td>
+                    <td style=" border-bottom:1px solid #024059; color:#000;  padding:10px 14px;">
+                        <table border="0" width="100%">
+                            <tr>
+                                <td class="spectral-extralight" style="font-size: 16px; width: 50%;">₹
+                                    {{$tp->offerPrice}}
+                                </td>
+                                <td
+                                    style="color: #CDAE62; font-family: 'Jost', sans-serif !important; font-weight:bold; font-size:16px; width: 50%;">
+                                    Save <i class="fas fa-indian-rupee-sign"
+                                        style="color: #CDAE62; font-size: 16px;"></i>{{number_format(max(0, $tp->tourPrice - $tp->offerPrice))}}
+
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            @endforeach
+            </tbody>
+        </table>
+    </div>
+
+
+    <div id="page10-div"
+        style="padding-top:20px;position:relative;max-width:100%;width:1440px;max-height:100%;height:100%;margin:0 auto;background-image:url('{{ $target010 }}');background-position:center;background-size:100% 100%">
+        <table border="0" cellspacing="0" cellpadding="0" style="width:100%;padding-left:25px;padding-right:15px">
+            <tr>
+                <td>
+                    <h2
+                        style="font-size:32px;color: #d1a550; margin: 0 0 12px;font-weight:400;font-family:'Playfair Display', serif; text-align: left;">
+                        Inclusions:</h2>
+                </td>
+            </tr>
+
+        </table>
+        <div style="padding-left:25px;padding-right:15px">
+            <ul style="margin:0">
+                @foreach($inclusions as $inclusions)
+
+                    <li style="font-size:22px;color: #ffffff;margin: 0 0 0px;line-height:35px;font-family:'AvenirNextCyr-Regular' ;"
+                        class="ft102">
+                        {{ $inclusions->description }}
+                    </li>
+                @endforeach
+
+            </ul>
+        </div>
+        <table border="0" cellspacing="0" cellpadding="0"
+            style="width:100%;padding-top:20px;padding-left:25px;padding-right:15px">
+            <tr>
+                <td>
+                    <h2
+                        style="font-size:32px;color: #d1a550;font-weight:400; margin: 0 0 12px;font-family:'Playfair Display', serif; text-align: left;">
+                        Exclusions:</h2>
+                </td>
+            </tr>
+        </table>
+        <div style="padding-left:25px;padding-right:15px">
+            <ul style="margin:0">
+                @foreach($exclusions as $exclusion)
+                    <li style="font-size:22px;color: #ffffff;margin: 0 0 0px;line-height:35px;font-family:'AvenirNextCyr-Regular';"
+                        class="ft102">
+                        {{ $exclusion->description }}
+                    </li>
+                @endforeach
+            </ul>
+        </div>
+    </div>
+    <div id="page2-div" class="page page2">
+        <table border="0" cellspacing="0" cellpadding="0" style="width:100%; height:100%; margin:0; padding:0;">
+            <tr>
+                <td>
+                    <img src="{{ $target011 }}" alt="background image" />
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div id="page2-div" class="page page2">
+        <table border="0" cellspacing="0" cellpadding="0" style="width:100%; height:100%; margin:0; padding:0;">
+            <tr>
+                <td>
+                    <img src="{{ $target012 }}" alt="background image" />
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div id="page2-div" class="page page2">
+        <table border="0" cellspacing="0" cellpadding="0" style="width:100%; height:100%; margin:0; padding:0;">
+            <tr>
+                <td>
+                    <img src="{{ $target013 }}" alt="background image" />
+                </td>
+            </tr>
+        </table>
+    </div>
+
+</body>
+
+</html>

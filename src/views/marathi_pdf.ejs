@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+    <meta charset="UTF-8">
+    <title>Users Marathi PDF</title>
+    <style>
+        body {
+            font-family: 'Mangal', sans-serif; /* Ensure Marathi font is applied */
+            font-size: 14px;
+        }
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .table th, .table td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <h1>वापरकर्ता माहिती</h1> <!-- Marathi heading -->
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>नाव</th> <!-- Marathi column header for Name -->
+                <th>ईमेल</th> <!-- Marathi column header for Email -->
+                <th>संपर्क क्रमांक</th> <!-- Marathi column header for Phone Number -->
+            </tr>
+        </thead>
+        <tbody>
+            @foreach ($users as $user)
+                <tr>
+                    <td>{{ $user->userName }}</td>
+                    <td>{{ $user->email }}</td>
+                    <td>{{ $user->contact }}</td>
+                </tr>
+            @endforeach
+        </tbody>
+    </table>
+</body>
+</html>

@@ -1,0 +1,710 @@
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Predeparture</title>
+    <style type="text/css">
+        @font-face {
+            font-family: Cambria;
+            /* src: url(../font/Calibri-Font-Family/Cambria-Font.ttf); */
+            src: url("{{ storage_path('fonts/Calibri-Font-Family/Cambria-Font.ttf') }}") format("truetype");
+
+
+        }
+
+        /* @font-face {
+            font-family: Cambria;
+            src: url(../public/font/Cambria.otf);
+        } */
+
+
+        .flight-class th,
+        .flight-class td {
+            border: 1px solid #000;
+            padding: 8px 5px;
+            width: 25%;
+            text-align: left;
+        }
+
+        img {
+            max-width: 100%;
+            vertical-align: middle
+        }
+
+        .logo-table td {
+            width: 50%;
+            padding: 10px
+        }
+
+        .logo-table {
+            border-bottom: 1px solid #000
+        }
+
+        p {
+            color: #000;
+            margin-top: 0.1em;
+            margin-bottom: 0.1em;
+            font-size: 16px;
+            letter-spacing: 0.5px;
+            line-height: 1.25;
+            font-family: 'Cambria';
+        }
+
+        li,
+        td {
+
+            font-size: 16px;
+            letter-spacing: 0.5px;
+            font-family: 'Cambria';
+            color: #000;
+        }
+
+        th {
+            font-family: 'Cambria';
+        }
+
+        li {
+            padding: 2px 0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            margin: 0.5cm 0.4cm;
+            padding: 20px 0;
+            border: 2px solid #000;
+            box-sizing: border-box;
+        }
+
+        /* .page-container {
+        position: absolute; top: 0px bottom: 0px; left: 0px; right: 0px; width: 100%; height: 100%; overflow: hidden;
+        border:2px solid black; margin: 20px;width:100%
+
+    }  */
+        .page-container {
+            max-width: 100%;
+            display: block;
+            /* padding-top: 20px;
+            padding-bottom: 20px; */
+            font-family: 'Cambria';
+            margin-left: auto;
+            margin-right: auto;
+            width: 90%;
+        }
+
+        ul {
+            padding-left: 2em;
+        }
+
+        .flight-class {
+            border: 1px solid #000;
+        }
+
+        .page-break {
+            page-break-after: always;
+        }
+
+        @font-face {
+            font-family: Cambria;
+            /* src: url(../font/Cambria-regular.otf); */
+            src: url("{{ storage_path('fonts/Cambria-regular.otf') }}") format("truetype");
+
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="page1-div" class="page-container">
+
+        <table class="logo-table" border="0" cellspacing="0" cellpadding="0" style="width:100%">
+            <tbody>
+                <tr>
+                    <td><img src="images/logopre.webp" style="width:70%"></td>
+                    <td style="text-align:right">
+                        <div>
+                            <h5 style="margin:0;font-size:17px; font-weight:600;color:#000">Musmade Hospitality Pvt.
+                                Ltd
+                            </h5>
+                            <p style="margin:6px 0 6px;line-height: 1.15; ">Ground floor - 7, LaCasita Complex, <br />
+                                Opposite Ravet Police Station, <br />
+                                Sector – 32A, Ravet, Pune – 412101<br /></p>
+                            <a href="www.waari.in">www.waari.in </a>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <table border="0" cellspacing="0" cellpadding="0" style="width:100%;margin-top:10px">
+            <tr>
+                <td style="text-align:left;padding: 9px 0">Dear Guest, </td>
+            </tr>
+            <tr>
+                <td style="text-align:left;padding: 9px 0">Namaste! </td>
+            </tr>
+            <tr>
+                <td style="text-align:left;padding: 2px 0 9px">
+                    <p style="margin:0">Your <span style="text-transform: capitalize;"><b>{{ $grouptoursdata->tourName }}</b></span> journey is
+                        now all set for
+                        departure.
+                        Kindly go through this document for important information about your journey.</p>
+                    <ul style="margin:0">
+                        <li>Journey Itinerary - Attached herewith</li>
+                    </ul>
+                </td>
+            </tr>
+            <tr>
+                <td style="text-align:left;padding: 2px 0 9px"><b>Tour Director </b> -
+                    {{$grouptoursdata->tourManager}}({{$grouptoursdata->managerNo}})
+                    </p>
+                    <ul>
+                        <li>Tour director will join the journey at:- {{ $d2d->startCity }} </li>
+                        <li>Tour director will leave the journey at:- {{ $d2d->endCity }}</li>
+                    </ul>
+                </td>
+            </tr>
+            <tr>
+                <td style="text-align:left;padding: 2px 0 9px;"><b>Guest relation</b> -
+                    Emergency Contact Number in Office - +91 9607788997
+                    </p>
+                </td>
+            </tr>
+
+            <tr>
+                <td style="text-align:left;padding: 2px 0 9px; ">
+                    <p><b>Flights:</b> – </p>
+                    <ul>
+                        <li>The flight and train details are given below. Please go through it. </li>
+
+                    </ul>
+                </td>
+            </tr>
+        </table>
+        @foreach($flightDetails as $ft)
+        <table style="margin-top:5px;width:100%">
+            <thead>
+                <tr>
+                    <th style="text-align:left;color:#024059 !important">Flight Details: {{ $ft->from }} – {{ $ft->to }} – {{ $ft->from }} </th>
+
+                </tr>
+            </thead>
+        </table>
+        <table class="flight-class" cellspacing="0" cellpadding="0" style="width:100%">
+            <thead>
+                <tr>
+                    <th>Flight</th>
+                    <th>From</th>
+                    <th>To</th>
+                    <th>Weight</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>{{ $ft->airline }}</td>
+                    <td>{{ $ft->from }} {{ $ft->fromDate }} {{ $ft->fromTime }}</td>
+                    <td>{{ $ft->to }} {{ $ft->toDate }} {{ $ft->toTime }}</td>
+                    <td>{{ $ft->weight }}</td>
+                </tr>
+
+            </tbody>
+        </table>
+
+        <div>
+            <ul style="margin:8px 0px 0px;width:100%;">
+                <li>Your {{ $ft->from }} flight is scheduled on {{ $ft->fromDate }} at {{ $ft->from }} airport which is at
+                    {{ $ft->fromTime }}.
+                </li>
+                <li>And your {{ $ft->to }} flight is scheduled on {{ $ft->fromDate }} at {{ $ft->to }} airport which is at
+                    {{ $ft->fromTime }}
+                </li>
+                <li>Kindly report to the airport 2 hours prior the flight departure time </li>
+                <li>Our Guest relation team will assist you with the web check-in process.</li>
+                <li>We suggest you carry dry snacks of your choice for the flight journey. In-flight meals
+                    are
+                    not included in the airfare. Waari Meal Services will start from first destination till
+                    the
+                    last destination of the journey as mentioned in the itinerary.</li>
+            </ul>
+        </div>
+        @endforeach
+
+        <!-- </td>
+            </tr>
+        </table> -->
+        <!-- <table style="padding-top:8px">
+                <tr>
+                    <th style="text-align:left;">Flight Details: Pune – Chennai – Pune </th>
+
+                </tr>
+            </table> -->
+        @if (count($flightDetails) > 0)
+        <div class="page-break"></div>
+        @endif
+        @foreach($trainDetails as $td)
+        <table style="margin-top:5px;width:100%">
+            <thead>
+                <tr>
+                    <th style="text-align:left;color:#024059 !important">Train Details:</th>
+
+                </tr>
+            </thead>
+        </table>
+        <table class="flight-class" cellspacing="0" cellpadding="0" style="width:100%">
+
+            <thead>
+                <tr>
+                    <th>Train No</th>
+                    <th>Train Name</th>
+                    <th>From</th>
+                    <th>To</th>
+                </tr>
+            </thead>
+            <tbody>
+
+                <tr>
+                    <td>{{ $td->trainNo }}</td>
+                    <td>{{ $td->trainName }} </td>
+                    <td>{{ $td->from }} </td>
+                    <td>{{ $td->to }}</td>
+                </tr>
+
+            </tbody>
+        </table>
+        @endforeach
+    </div>
+
+    <!-- page 2 -->
+
+
+
+    <div id="page2-div" class="page-container">
+        <table style="margin:8px 0 0px;width:100%">
+            <tr>
+                <th style="text-align:left;">ITINERARY:</th>
+
+            </tr>
+        </table>
+
+        @foreach($detailedItinerary as $index => $itinerary)
+        <div style="margin-bottom:4px">
+            <table border="0" cellspacing="0" cellpadding="0" style="width:100% ">
+                <tr>
+
+                    <td style="text-align:left;padding-bottom:2px;font-size:18px"><span><b>DAY {{ $index + 1 }}</b></span> :
+                        <span style="text-transform: capitalize;"><b>{{ $itinerary->title}}</b></span> :
+                        <span><b>{{ $itinerary->distance }} KM |<b></span>
+                        <span><b>{{ $itinerary->approxTravelTime }} Hrs<b></span>
+
+                    </td>
+                </tr>
+            </table>
+            <div style="width:100% ;text-align:left">
+                <p style="padding:0px 5px;font-size:16px" innerHtml=>
+                    {!! htmlspecialchars_decode(html_entity_decode($itinerary->description)) !!}
+                <p>
+            </div>
+            <table border="0" cellspacing="0" cellpadding="0" style="width:100% ">
+                <td style="text-align:left;padding-bottom:20px">
+                    <p>
+                        <b>
+                            @php
+                            $mealTypes = json_decode($itinerary->mealTypeId);
+                            echo implode(', ', $mealTypes);
+                            @endphp
+                        </b>
+                    </p>
+                </td>
+                </tr>
+            </table>
+        </div>
+        @endforeach
+    </div>
+
+    <div id="page4-div" class="page-container">
+        <table style="width:100%">
+            <tr>
+                <th style="text-align:left;">HOTELS:</th>
+
+            </tr>
+        </table>
+
+        <table class="flight-class" cellspacing="0" cellpadding="0" style="width:100%;margin-bottom:10px">
+
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Destination</th>
+                    <th>Hotel Name</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach($skeletonItinerary as $index => $skdetail)
+                <tr>
+                    <td>DAY {{ $index + 1 }} : {{ $skdetail->date }}</td>
+                    <td>{{ $skdetail->destination }}</td>
+                    <td>{{ $skdetail->hotelName }}</td>
+                </tr>
+                @endforeach
+            </tbody>
+        </table>
+
+        <div>
+            <ul style="width:100%">
+                <li>Standard Check-in time is 02:00 PM and check-out time is 10 AM.</li>
+                <li>Do not keep your money or valuables in the hotel room or in your locked bag in the room,
+                    always carry it with you.</li>
+                <li>Keep hotel addresses, tour director’s mobile number along with the Waari Emergency
+                    contact
+                    number with you at all times.</li>
+                <li>Minibar and pay (adult-18+) channels in the hotel room are chargeable.</li>
+                <li>Kindly use hotel accessories with care. Any damages done will be chargeable to you.</li>
+                <li>It is advisable to be in decent clothes at the time of any group activity or at
+                    mealtimes.
+                </li>
+                <li>Under unavoidable circumstances hotels are subject to change, in such case a substitute
+                    hotel of similar category will be provided.</li>
+
+            </ul>
+        </div>
+
+
+
+        <table style="margin:8px 0 3px;width:100%">
+            <tr>
+                <th style="text-align:left;">TRANSFERS:</th>
+
+            </tr>
+        </table>
+        <!-- <table style="width:100%">
+            <tr>
+                <td> -->
+        <div>
+            <ul style="width:100%">
+                <li>Travel by small cars or Tempo Travellers or Mini Buses or big buses depending on the
+                    respective journey group size.</li>
+                <li>Guests who have opted and paid for a separate vehicle for sole use or upgraded the
+                    vehicle
+                    type or requested for tempo traveller/mini coach/big coach will be provided with the
+                    same.
+                </li>
+                <li>We request Guests to follow these guidelines for a smooth journey:</li>
+                <li>It is mandatory to wear a mask at all times.</li>
+                <li>There is a strict no smoking, no alcohol and no eating policy inside the vehicle.</li>
+                <li>Children should always be seated in the rear and not at the front seat.</li>
+                <li>Avoid discussing topics like religion or politics, which may lead to a debate. Talk
+                    softly
+                    with co-travellers and respect privacy.</li>
+                <li>Kindly treat your Vehicle drivers with compassion and respect.</li>
+                <li>Guests who suffer from motion sickness should carry required medication.</li>
+                <li>In Hilly Areas, AC will not be working.</li>
+                <li>For some destinations like Leh-Ladakh and Sikkim-Darjeeling, the Vehicle is not fixed for each day.
+                    Everyday different vehicles will used for sightseeing.</li>
+                <li>Seat arrangements on a First Come First Serve Basis.</li>
+
+            </ul>
+        </div>
+        <!-- </td>
+            </tr>
+        </table> -->
+    </div>
+
+    <!-- page5  -->
+
+    <div id="page5-div" class="page-container">
+        <table style="margin:8px 0 3px;width:100%">
+            <tr>
+                <th style="text-align:left;">Sightseeing:</th>
+
+            </tr>
+        </table>
+
+        <div>
+            <ul style="padding-bottom:8px;width:100%">
+                <li style="font-size:16px">Let’s respect everyone’s time. Be punctual to ensure that the day's schedule is followed
+                    as
+                    per the itinerary.</li>
+                <li style="font-size:16px">For ‘hands-free’ comfortable travel, carry a small cross-body shoulder bag/ sling or
+                    back
+                    pack with water bottle, cap, hand sanitizer and face mask with you for sightseeing.</li>
+                <li style="font-size:16px">Follow the social distancing, hygiene norms and regulations laid down at the
+                    destinations.
+                </li>
+
+            </ul>
+        </div>
+
+        <table style="margin:8px 0 3px;width:100%">
+            <tr>
+                <th style="text-align:left;">Shopping:</th>
+            </tr>
+        </table>
+
+        <div>
+            <ul style="padding-bottom:8px;width:100%">
+                <li> {{$grouptoursdata->shopping}}</li>
+            </ul>
+        </div>
+
+        <table style="margin:8px 0 3px;width:100%">
+            <tr>
+                <th style="text-align:left;">Weather:</th>
+
+            </tr>
+        </table>
+
+        <div>
+            <ul style="padding-bottom:8px;width:100%">
+                <li> {{$grouptoursdata->weather}}</li>
+            </ul>
+        </div>
+
+
+
+        <table style="margin:8px 0 3px;width:100%">
+            <tr>
+                <th style="text-align:left;margin:8px 0 3px">Things to carry:</th>
+
+            </tr>
+        </table>
+
+        <div>
+            <ul style="padding-bottom:0px;width:100%">
+                <li style="font-size:16px">For week-long journeys, we suggest 2-3 jeans / trousers , 7-8 tops / shirts / kurta, hat
+                    and
+                    sunglasses, thermals, jackets, woollen winter gear.</li>
+                <li style="font-size:16px">For Temple visits dress modestly and avoid sleeveless cloths and short/skirts.
+                    Hats/caps,
+                    T-shirts, slippers, short skirts are not allowed.</li>
+                <li style="font-size:16px">Comfortable sports shoes for daily use & a pair of slippers if needed</li>
+                <li style="font-size:16px">Sweaters/Sweatshirts/Hoodies are recommended for flight journey.</li>
+                <li style="font-size:16px">Carry sufficient face masks, hand sanitizer, hand gloves, hand wash and toiletries.</li>
+                <li style="font-size:16px">Carry your medicines with your doctor’s valid prescription.</li>
+                <li style="font-size:16px">Carry sufficient currency along with your credit/debit cards for any last-minute
+                    requirements.</li>
+                <li style="font-size:16px">Small bottles of liquid or lotions in your handbag should be kept in a transparent
+                    zip-lock
+                    bag.</li>
+                <li style="font-size:16px">Any liquid or lotion bottles of more than 50 ml as well as items prohibited in carry-on
+                    handbag by airline must be kept in your check-in bag.</li>
+                <li style="font-size:16px">It is prohibited to carry items like sharp items, guns, pistols, ammunition, drugs,
+                    explosives, fireworks etc. in the aircraft.</li>
+                <li style="font-size:16px">Mobile battery or power bank must be carried with you in your handbag/purse and not in
+                    check-in bag.</li>
+            </ul>
+        </div>
+        <!-- </td>
+            </tr>
+        </table> -->
+    </div>
+
+    <!-- page6 -->
+
+    <div id="page6-div" class="page-container">
+        <div>
+            <table class="flight-class" cellspacing="0" style="width:100%;margin-bottom:3px;margin-top:8px;border:1px solid #000">
+                <thead>
+                    <tr>
+                        <th style="text-align:center">Hand Bag</th>
+                        <th style="text-align:center">Check-in Bag</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Medicines (Pills, Tablets) with prescription </td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>Syrup (any Liquid) (upto 100ml) </td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>Power Bank, Mobile Charger, </td>
+                        <td>DSLR</td>
+                    </tr>
+                    <tr>
+                        <td>Batteries are recommended to be removed and carried in the hand baggage. </td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>Liquid cosmetics Should be carried in one plastic transparent zip-lock bag. The bag contains
+                            up
+                            to
+                            100 ml of each liquid cosmetic. </td>
+                        <td>Hair Dryer, Straightener, </td>
+                    </tr>
+                    <tr>
+                        <td>Razors that have the blade set into a plastic moulding are permitted in carry-on baggage,
+                            Shaving
+                            brush </td>
+                        <td style="border-bottom:1px solid #000">Electric razors, Sharp things, Scissors </td>
+                    </tr>
+                </tbody>
+
+            </table>
+        </div>
+
+
+        <table style="margin:8px 0 3px;width:100%">
+            <tr>
+                <th style="text-align:left;">Mandatory Documents to carry:</th>
+
+            </tr>
+        </table>
+        <!-- <table style="width:100%">
+            <tr>
+                <td> -->
+        <div>
+            <ul style="width:100%">
+                <li style="font-size:16px">ADULT: Aadhaar Card (Mandatory) + Passport – Back & front</li>
+                <li style="font-size:16px">CHILD: Aadhaar Card (Mandatory) + Passport/School ID – Back & front</li>
+                <li style="font-size:16px">INFANT: Aadhaar Card (Mandatory) + Birth Certificate – Back & front</li>
+                <li style="font-size:16px">ID card, ID card type and ID card number is mandatory at time of booking, kindly carry
+                    the
+                    same ID card on journey.</li>
+
+            </ul>
+        </div>
+        <!-- </td>
+            </tr>
+        </table> -->
+        @if (count($flightDetails) > 0)
+        <table style="margin:8px 0 3px;width:100%">
+            <tr>
+                <th style="text-align:left;"> Airport Formalities:</th>
+
+            </tr>
+        </table>
+        <!-- <table style="width:100%">
+            <tr>
+                <td> -->
+        <div>
+            <ul style="width:100%">
+                <li style="font-size:16px">To avoid any last-minute hassle, be at the airport 3 hours before the flight departure
+                    time.
+                </li>
+                <li style="font-size:16px">Air ticket & photo ID to be kept handy while entering the airport.</li>
+                <li style="font-size:16px">Show Air ticket copy, boarding pass and original Photo ID at the main entrance.</li>
+                <li style="font-size:16px">Report to the Check-in counter, complete Check-in formalities and drop your check-in
+                    baggage.</li>
+                <li style="font-size:16px">Ensure that you collect the baggage receipt, boarding card and your Photo ID from the
+                    check-in counter.</li>
+                <li style="font-size:16px">Complete the Security Check formalities.</li>
+                <li style="font-size:16px">Be present at the boarding gate one hour prior to the flight departure time.</li>
+                <li style="font-size:16px">Upon arrival at destination airport, kindly proceed to baggage collection counter.
+                    Collect
+                    your bags and proceed to the exit gate. </li>
+                <li style="font-size:16px">The journey manager will meet you outside the exit gate at the airport.</li>
+
+            </ul>
+        </div>
+        @endif
+        <!-- </td>
+            </tr>
+        </table> -->
+
+        @if (count($trainDetails) > 0)
+        <table style="margin:8px 0 3px;width:100%">
+            <tr>
+                <th style="text-align:left;"> Train Formalities:</th>
+
+            </tr>
+        </table>
+        <!-- <table style="width:100%">
+            <tr>
+                <td> -->
+        <div>
+            <ul style="width:100%">
+                <li>To avoid any last minute hassle, be at the railway station 2 hours before the train departure
+                    time.
+                </li>
+                <li>Train ticket & original Photo ID to be kept handy while travelling.</li>
+            </ul>
+        </div>
+        <!-- </td>
+            </tr>
+        </table> -->
+        <!-- </div> -->
+        @endif
+    </div>
+    <!-- page7 -->
+
+    <div id="page7-div" class="page-container">
+        <table style="margin:8px 0 3px;width:100%">
+            <tr>
+                <th style="text-align:left;">Carry money on journey:</th>
+
+            </tr>
+        </table>
+
+        <div>
+            <ul style="width:100%">
+                <li>Waari believes in an all-inclusive journey price policy. Your journey price includes
+                    return
+                    economy class air ticket, hotel accommodation, meals - breakfast, lunch & dinner as per
+                    the
+                    itinerary, sightseeing, transfers, entry tickets, journey manager services for the
+                    journey,
+                    guide charges, guide tips, driver tips etc.</li>
+                <li>Carry sufficient money if you wish to enjoy any optional sightseeing, any local
+                    delicacies
+                    or shopping on journey.</li>
+                <li>Digital payment is accepted in most places, which reduces the risk of carrying hard
+                    cash.
+                    You can opt for same.</li>
+                <li>Kindly carry extra money with you in digital form or cash for any emergency in
+                    unforeseen
+                    circumstances.</li>
+
+
+            </ul>
+        </div>
+        <!-- </td>
+            </tr>
+        </table> -->
+        <table style="width:100%">
+            <tr>
+                <td style="text-align:left;">
+                    <p><b>Disclaimer:</b>
+                    <ul>
+                        <li>
+                            At the time of journey launch, we have taken all efforts to
+                            provide accurate journey information, itinerary and price. However, under unavoidable
+                            circumstances
+                            or force majeure condition, journey arrangements are subject to change without any prior
+                            notice.
+                        </li>
+                        <li>
+                            Catering kitchen meals will be provided only in Spiritual Path and Senior Citizens' tours, with group size more than 20 guests. For groups less than 20, hotel meals will be served.
+                        </li>
+                    </ul>
+                </p>
+                </td>
+
+            </tr>
+        </table>
+        <table style="width:100%">
+            <tr>
+                <th style="text-align:left;">
+                    <p style="font-size: 17px;">We wish you a Happy & Safe Journey. Come, Travel Explore and Inspire
+                        yourself with Waari.in! </p>
+                </th>
+
+            </tr>
+        </table>
+        <table style="width:100%">
+            <tr>
+                <th style="text-align:left;">
+                    <p style="font-size: 17px;">Have a Wonderful Holiday!</p>
+                </th>
+
+            </tr>
+        </table>
+    </div>
+
+</body>
+
+</html>

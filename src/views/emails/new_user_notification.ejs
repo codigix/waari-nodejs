@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>New User Notification</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #333333;
+            text-align: center;
+        }
+        p {
+            font-size: 16px;
+            color: #555555;
+        }
+        .data {
+            font-size: 14px;
+            color: black;
+            text-align: left;
+            margin-top: 20px;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            font-size: 14px;
+            color: #999999;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>New User Added</h1>
+        <p>Hello Super Admin,</p>
+        <p>A new user has just been added to the system. Here are their details:</p>
+        <div class="data"><b>User Name:</b> {{ $details['userName'] }}</div>
+        <div class="data"><b>Email:</b> {{ $details['email'] }}</div>
+        <div class="data"><b>Password:</b> {{ $details['password'] }}</div>
+        <p>If you have any concerns, please review the user's profile in the admin panel.</p>
+    </div>
+</body>
+</html>

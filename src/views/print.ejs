@@ -1,0 +1,1018 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+
+<head>
+    <title></title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+    <style type="text/css">
+    @font-face {
+        font-family: avenir-next;
+        /* src: url(../public/font/avenir-next.otf); */
+        src: url("{{ storage_path('fonts/avenir-next.otf') }}") format("truetype");
+
+    }
+
+    .page-break {
+        page-break-after: always;
+    }
+
+    @page {
+        size: A4;
+        padding: 0;
+        margin: 0;
+        @bottom-center {
+                content: element(footer);
+            }
+    }
+
+    .d-flex {
+        display: flex;
+        align-items: center;
+    }
+
+    img {
+        max-width: 100%;
+        vertical-align: middle;
+    }
+
+    .departure-table td,
+    .departure-table th {
+
+        padding: 10px;
+        text-align: left;
+    }
+
+    .departure-table td {
+        border-right: 1px solid #ccc;
+
+    }
+
+    .departure-table td:last-child,
+    .departure-table th:last-child {
+        border-right: 0px solid #ccc;
+
+    }
+
+    .departure-table td {
+        font-size: 15px;
+        color: #212221;
+    }
+
+    .departure-table th {
+        border-right: 1px solid #ccc;
+        border-bottom: 1px solid #ccc;
+    }
+
+    .backgroundimg {
+        position: relative;
+        mix-blend-mode: multiply;
+    }
+
+    .overlay {
+        content: "";
+        display: block;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgb(0 0 0 / 56%);
+    }
+
+    .logo-table td {
+        width: 50%;
+        padding: 10px
+    }
+
+    .logo-table-generator {
+        border-bottom: 8px solid #404040;
+    }
+
+    p,
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6,
+    span,
+    a div,
+    td,
+    th {
+        font-family: 'avenir-next', sans serif;
+    }
+
+    p,
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        margin: 12px 0;
+    }
+
+    ::marker {
+        width: 20px
+    }
+
+    .departure-table tr:nth-child(even) {
+        background-color: #f8f8f8;
+    }
+
+    body {
+        margin: 0;
+        box-sizing: border-box;
+        width: 900px;
+        padding-top: 15px;
+        padding-bottom: 60px;
+        /* height:1263px */
+    }
+
+    .page-container {
+        position: relative;
+        width: 90%;
+        max-width: 100%;
+        display: block;
+        /* max-height:100%;
+        height:100%; */
+
+    }
+
+
+    .city-ul {
+        width: 100%;
+        /* Set the width of the container */
+        margin: 0;
+        padding: 0;
+    }
+
+    li {
+        line-height: 22px
+    }
+
+    .city-ul li {
+        display: inline-block;
+        /* Use inline-block instead of flex */
+        width: 20%;
+        /* Set fixed width for each item */
+        list-style-image: url('images/pin.webp')
+    }
+
+    .table-container {
+        border: 1px solid #ccc;
+        border-radius: 10px;
+        /* Adjust the border-radius as needed */
+        overflow: hidden;
+        /* Ensure the rounded corners are applied */
+    }
+
+    /* @font-face {
+        font-family: 'avenir-next',sans serif;
+        src: url(font/juana-regular.otf);
+    } */
+    .capitalize-first::first-letter {
+            text-transform: uppercase;
+    }
+    </style>
+</head>
+
+<body style="position:relative">
+    <div id="page1-div" class="page-container">
+        <div class="logo-table-generator" style="padding:0 10px">
+            <table class="logo-table" border="0" cellspacing="0" cellpadding="0" style="width:100%;">
+                <tbody>
+                    <tr>
+                        <td style="width:40%"><img src="images/logopre.webp" style="width:60%"></td>
+                        <td style="width:30%"></td>
+                        <td style="text-align:left;width:30%;font-family:'avenir-next',sans serif;">
+                            <p style="text-align:left;font-size:15px"><img src="images/phone.webp"
+                                    style="width:20px;margin-right:10px"><strong>8976564545</strong>
+                            </p>
+                            <a href="mailto:waari@gmail.com"
+                                style="text-align:left;font-size:15px;font-family:'avenir-next',sans serif;text-decoration:none;color:#000"><img
+                                    src="images/envelope.webp" style="width:20px;margin-right:10px">waari@gmail.com</p>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <table cellspacing="0" cellpadding="0" border="0" style="width:100%;margin:0">
+            <tr>
+                <td>
+                    <div class="backgroundimg" style="height:300px;width:100%;">
+                        <img src="{{ $grouptoursdata->bgImage }}" alt="background image"
+                            style="height: 100%;width: 100%;z-index: 0;object-fit: cover; max-width: 100%;" />
+                        <div class="overlay"></div>
+                        <p style="position:absolute;top:50px;left:30px;white-space:nowrap;font-size: 16px;font-family:'avenir-next',sans serif; color: #ffffff;text-transform: capitalize;"
+                            class="ft111"><b>GROUP TOUR - {{ $grouptoursdata->tourCode }}</b></p>
+                        <p style="position:absolute;top:73px;left:30px;white-space:nowrap;font-size: 25px;font-family:'avenir-next',sans serif; color: #ffffff;text-transform: capitalize;"
+                            class="ft112"><b>{{ $grouptoursdata->tourName }}</b></p>
+                        <p style="position:absolute;top:115px;left:30px;white-space:nowrap;font-size: 16px;font-family:'avenir-next',sans serif; color: #ffffff;"
+                            class="ft111"><b>{{ $grouptoursdata->days }} Days | {{ $citiesCount }} Cities</b></p>
+                    </div>
+
+
+                </td>
+            </tr>
+        </table>
+        <table style="background:#024059 ; width:100%;margin:0">
+            <tr>
+                <td style="text-align:left;width:10%;padding: 15px 0 15px 30px;margin:auto"><span
+                        style="font-size: 15px;color: #fff;font-weight:400; font-family: 'avenir-next',sans serif;">Join
+                        tour</span>
+                    <p
+                        style="font-size: 15px;color: #fff;margin:5px 0;font-weight:500; font-family: 'avenir-next',sans serif;">
+                        <b>{{ $d2d->startCity }} {{ $grouptoursdata->startDate }} </b>
+                    </p>
+                </td>
+                <td style="text-align:left;width:25%;padding: 15px 0 15px 30px;margin:auto"><span
+                        style="font-size: 16px;color:#fff;font-weight:400; font-family:'avenir-next',sans serif;">Leave
+                        tour</span>
+                    <p
+                        style="font-size: 15px;color:#fff;margin:5px 0;font-weight:500; font-family: 'avenir-next',sans serif;">
+                        <b>{{ $d2d->endCity }} {{ $grouptoursdata->endDate }}</b>
+                    </p>
+                </td>
+            </tr>
+
+        </table>
+        <table cellspacing="0" cellpadding="0" style="border-bottom:1px solid #ccc;width:90%;margin:0 20px">
+            <tr>
+                <td>
+                    <p style="font-size:17px; color: #024059;font-weight: 700;font-family:'avenir-next',sans serif"
+                        class="ft22"><b>Tour Includes</b>
+                    </p>
+                </td>
+            </tr>
+        </table>
+        <div style="margin-top:20px">
+            <table cellspacing="0" cellpadding="0" style="width:70%;margin:0 20px">
+                <tr>
+                    <td style="width:15%;position:relative;margin:auto;text-align:center">
+                        <div style="position:relative;">
+                            <img src="images/hotel.png">
+                        </div>
+                        <p
+                            style="font-size: 13px;color: #212221;position:relative;font-family:'avenir-next',sans serif;text-align:center">
+                            Hotels</p>
+                    </td>
+                    <td style="width:15%;margin:auto;text-align:center">
+                        <div style="position:relative;">
+                            <img src="images/bus.png">
+                        </div>
+                        <p
+                            style="font-size: 13px;color: #212221;position:relative;font-family: 'avenir-next',sans serif;text-align:center">
+                            Transport
+                        </p>
+                    </td>
+                    <td style="width:15%;margin:auto;text-align:center">
+                        <div style="position:relative;">
+                            <img src="images/spoon.png">
+                        </div>
+                        <p
+                            style="font-size: 13px;color: #212221;position:relative;font-family: 'avenir-next',sans serif;text-align:center">
+                            All Meals
+                        </p>
+                    </td>
+                    @if (count($flightDetails) > 0)
+                    <td style="width:15%;margin:auto;text-align:center">
+                        <div style="position:relative;">
+                            <img src="images/plane.png">
+                        </div>
+                        <p
+                            style="font-size: 13px;color: #212221; position:relative;font-family: 'avenir-next',sans serif;text-align:center">
+                            Flights</p>
+                    </td>
+                    @endif
+                    <td style="width:15%;margin:auto;text-align:center">
+                        <div style="position:relative;">
+                            <img src="images/camera.png">
+                        </div>
+                        <p
+                            style="font-size: 13px;color: #212221; position:relative; font-family: 'avenir-next',sans serif;text-align:center">
+                            Sightseeing
+                        </p>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <table cellspacing="0" cellpadding="0"
+            style="background-color:#000;margin-top:10px;margin-left:20px;margin-right:20px">
+            <tr>
+                <td style="padding: 10px 25px">
+                    <p style="font-size:18px;color: #fff;margin: 0;white-space:nowrap; font-family: 'avenir-next',sans serif;"
+                        class="ft22">
+                        <b>{{$citiesCount}}
+                            Cities</b>
+                    </p>
+                </td>
+            </tr>
+        </table>
+        <table cellspacing="0" cellpadding="0" style="width:90%;margin:0 20px">
+
+            <tr>
+                <td style="width:150px">
+                    <p style="font-size:15px;font-weight:500; font-family: 'avenir-next',sans serif;">
+                        <b>{{ $countryName }}</b>
+                    </p>
+                </td>
+            </tr>
+        </table>
+        <div style="margin:0 20px">
+
+            <ul class="city-ul" style="list-style-image: url('images/pin.webp')">
+                @foreach ($cities as $city)
+                <li
+                    style="padding:5px 0;font-size: 16px;color: #212221;vertical-align:middle; font-family: 'avenir-next',sans serif;">
+                    <div>
+                        <img src="images/pin.webp" style="margin-top:5px" />
+                        <span style="margin-top:0;margin-bottom:0;"> {{ $city->citiesName }}</span>
+                    </div>
+                </li>
+                @endforeach
+            </ul>
+        </div>
+        <table cellspacing="0" cellpadding="0" style="width:90%;margin:0 20px">
+            <tbody>
+                <tr>
+                    <td>
+                        <p style="font-size: 17px;color: #000; font-family: 'avenir-next',sans serif;" class="ft22">
+                            <b>Key Highlights</b>
+                        </p>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        @foreach($detailedItinerary as $index => $dt)
+        <div style="width:90%">
+            <ul style="margin:0">
+                <li style="font-size:16px;color: #212221;font-family:'avenir-next',sans serif;padding:4px 0">
+                    {{$dt->title}}
+                </li>
+            </ul>
+        </div>
+        @endforeach
+
+        <div class="footer"
+            style="position:fixed;bottom:0;background:#000;height:20px;width:100%;padding:10px 0;text-align:center;margin:auto;vertical-align:middle">
+            <p
+                style="color:#ffffffcf;text-align:center;font-family:'avenir-next',sans serif;font-size:12px;margin:auto;padding-bottom:50px">
+                ©2021-22 Musmade Hospitality Pvt Ltd. All Rights Reserved.</p>
+            <p></p>
+            <p></p>
+        </div>
+    </div>
+    <div class="page-break"></div>
+    <div id="page2-div" class="page-container">
+        <table cellspacing="0" cellpadding="0" style="border-bottom:1px solid #ccc;width:90%;margin:0 20px">
+            <tr>
+                <td>
+                    <p style="font-size: 19px;color: #024059; font-family:'avenir-next',sans serif;" class="ft22">
+                        <b>Tour Itinerary</b></p>
+                </td>
+            </tr>
+        </table>
+
+        @foreach($detailedItinerary as $index => $dt)
+        <div style="border-bottom:1px solid #ccc;width:90%;margin-top:10px;margin-right: 20px;margin-left: 20px;">
+            <table cellspacing="0" cellpadding="0" border="0" style="width:100%;margin:0">
+
+                <tr>
+                    <th style="font-size: 17px;color: #29499a;text-align:left;font-weight: 200;text-transform: capitalize; font-family: 'avenir-next',sans serif;line-height:24px;padding:0"
+                        class="ft25">Day
+                        {{ $index + 1 }} | {{$dt->date}} -
+                        <b style="font-weight:700">{{$dt->title}}</b>
+                    </th>
+                </tr>
+            </table>
+            <div style="width:100%;margin-top:0">
+                <p
+                    style="font-size: 15px;line-height:24px;color: #212221;text-align:left;width:100%;font-family: 'avenir-next',sans serif;capitalize-first">
+                    {!! htmlspecialchars_decode(html_entity_decode($dt->description)) !!}
+                </p>
+            </div>
+            <table class="dinner-table" cellspacing="0" cellpadding="0" border="0"
+                style="width:100%;margin:5px 0px 10px">
+                <tr>
+                    <td style="width:100%">
+                        <div class="d-flex" style="position:relative">
+                            <img src="images/food-1.webp">
+                            <span
+                                style="font-size: 16px;color: #595959;position:absolute;top:-4px; left: 40px;white-space:nowrap; font-family: 'avenir-next',sans serif;">
+                                @php
+                                $mealTypes = json_decode($dt->mealTypeId);
+                                echo implode(', ', $mealTypes);
+                                @endphp</span>
+                        </div>
+                    </td>
+
+                </tr>
+
+            </table>
+        </div>
+        @endforeach
+
+
+        <div class="footer"
+            style="position:fixed;bottom:0;background:#000;height:20px;width:100%;padding:10px 0;text-align:center;margin:auto;vertical-align:middle">
+            <p
+                style="color:#ffffffcf;text-align:center;font-family:'avenir-next',sans serif;font-size:12px;margin:auto;padding-bottom:50px">
+                ©2021-22 Musmade Hospitality Pvt Ltd. All Rights Reserved.</p>
+            <p></p>
+            <p></p>
+        </div>
+    </div>
+
+    <div id="page3-div" class="page-container">
+        <table cellspacing="0" cellpadding="0"
+            style="border-bottom:1px solid #ccc;width:90%;margin-right: 20px; margin-left: 20px;">
+            <tr>
+                <td>
+                    <p style="font-size: 17px;color: #024059; font-family: 'avenir-next',sans serif;" class="ft22">
+                        <b>Price Details</b>
+                    </p>
+                </td>
+            </tr>
+        </table>
+        <table cellspacing="0" cellpadding="0" border="0" style="width:80%;margin-right: 20px; margin-left: 20px;">
+            <tr>
+
+            </tr>
+        </table>
+        <div class="table-container" style="width:90%;margin-top:10px;margin-right: 20px; margin-left: 20px;">
+            <table class="departure-table" cellspacing="0" cellpadding="0"
+                style="width:100%; border-collapse: collapse;">
+                <thead>
+                    <tr>
+                        <th style="text-align:left">Room type</th>
+                        <th style="text-align:center">Tour Price</th>
+                        <th style="text-align:center">Offer Price</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @foreach($tourPrice as $tp)
+                    <tr>
+                        <td style="text-align:left">{{ $tp->roomShareName }}</td>
+                        <td style="text-align:center">{{ $tp->offerPrice }}</td>
+                        @if($grouptoursdata->destinationId == 1)
+                        <td style="text-align:center">
+                            {{ number_format(ceil($tp->offerPrice + ($tp->offerPrice * 0.05))) }}
+                        </td>
+                        @else
+                        <td style="text-align:center">
+                            {{ number_format(ceil(($tp->offerPrice + ($tp->offerPrice * 0.05)) + (($tp->offerPrice + ($tp->offerPrice * 0.05)) * 0.05))) }}
+                        </td>
+                        @endif
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+        <table cellspacing="0" cellpadding="0" border="0" style="width:90%;margin-right: 20px; margin-left: 20px;">
+            <tr>
+                <td>
+                    <ul>
+                        <li style="font-size: 15px;color: #212221;margin:5px 0; font-family: 'avenir-next',sans serif;">
+                            Above mentioned tour prices are Per
+                            Person for Indian Nationals only.</li>
+                        @if($grouptoursdata->destinationId == 1)
+                        <li style="font-size: 15px;color: #212221;margin:5px 0; font-family: 'avenir-next',sans serif;">
+                            5% GST is applicable on given tour
+                            price.</li>
+                        @elseif($grouptoursdata->destinationId == 2)
+                        <li style="font-size: 15px;color: #212221;margin:5px 0; font-family: 'avenir-next',sans serif;">
+                            5% GST and 5% TCS are applicable on given tour
+                            price.</li>
+                        @endif
+                        <li style="font-size: 15px;color: #212221;margin:5px 0; font-family: 'avenir-next',sans serif;">
+                            Terms and Conditions apply.</li>
+                </td>
+            </tr>
+        </table>
+        <!-- <table cellspacing="0" cellpadding="0" style="width:90%;margin-top:10px;margin-right: 20px; margin-left: 20px;">
+            <tr>
+                <td>
+                    <p style="font-size: 17px;color:#000; font-family: 'avenir-next',sans serif;" class="ft22"><b>EMI OPTIONS</b></p>
+                </td>
+            </tr>
+        </table> -->
+        <!-- <div class="table-container" style="width:90%;margin-bottom:20px;margin-right: 20px; margin-left: 20px;">
+            <table class="departure-table" cellspacing="0" cellpadding="0" style="width:100%;">
+                <thead>
+                    <tr>
+                        <th colspan="2">No Cost Emi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>3 Months</td>
+                        <td>54,000</td>
+                    </tr>
+                    <tr>
+                        <td>3 Months</td>
+                        <td>40,000</td>
+                    </tr>
+
+                </tbody>
+            </table>
+        </div>
+        <div class="table-container" style="width:90%;margin-bottom:20px;margin-right: 20px; margin-left: 20px;">
+            <table class="departure-table" cellspacing="0" cellpadding="0" style="width:100%;">
+                <thead>
+                    <tr>
+                        <th colspan="2">Standard EMI</th>
+
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>9 Months</td>
+                        <td>54,000</td>
+                    </tr>
+                    <tr>
+                        <td>12 Months</td>
+                        <td>40,000</td>
+                    </tr>
+                    <tr>
+                        <td>18 Months</td>
+                        <td>40,000</td>
+                    </tr>
+                    <tr>
+                        <td>24 Months</td>
+                        <td>40,000</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <table cellspacing="0" cellpadding="0" border="0" style="width:90%;margin-right: 20px;margin-left: 20px;">
+            <tr>
+                <td>
+                    <ul>
+                        <li style="font-size: 16px;color: #212221;margin:5px 0; font-family: 'avenir-next',sans serif;">Upon booking a tour with the EMI
+                            option,
+                            you agree to the terms mentioned by EMI
+                            providing
+                            company.</li>
+                        <li style="font-size: 16px;color: #212221;margin:5px 0; font-family: 'avenir-next',sans serif;">Adhere to the EMI repayment
+                            schedule.
+                        </li>
+                        <li style="font-size: 16px;color: #212221;margin:5px 0; font-family: 'avenir-next',sans serif;">In case of, Tour cancellation, the
+                            cancellation charge will apply as per policy.</li>
+                        <li style="font-size: 16px;color: #212221;margin:5px 0; font-family: 'avenir-next',sans serif;">Waari is just a facilitator
+                            and
+                            approval of loans lies with the Finance company
+                            and
+                            Waari does
+                            not have any control over the same. If EMI is rejected then guest will have to make the
+                            payment as per their
+                            tour.</li>
+                        <li style="font-size: 16px;color: #212221;margin:5px 0; font-family: 'avenir-next',sans serif;">EMI-related disputes are to be
+                            resolved
+                            with the financing Firm SanKash.</li>
+                </td>
+            </tr>
+        </table> -->
+        <div class="footer"
+            style="position:fixed;bottom:0;background:#000;height:20px;width:100%;padding:10px 0;text-align:center;margin:auto;vertical-align:middle">
+            <p
+                style="color:#ffffffcf;text-align:center;font-family:'avenir-next',sans serif;font-size:12px;margin:auto;padding-bottom:50px">
+                ©2021-22 Musmade Hospitality Pvt Ltd. All Rights Reserved.</p>
+            <p></p>
+            <p></p>
+        </div>
+    </div>
+    <div id="page4-div" class="page-container">
+        <table cellspacing="0" cellpadding="0"
+            style="border-bottom:1px solid #ccc;width:90%;margin-right: 20px;margin-left: 20px;">
+            <tr>
+                <td>
+                    <p style="font-size: 17px;color: #024059; font-family: 'avenir-next',sans serif;" class="ft22">
+                        <b>Transport Details</b>
+                    </p>
+                </td>
+            </tr>
+        </table>
+        @if (count($flightDetails) > 0)
+        <div class="table-container"
+            style="width:90%;margin-bottom:20px;margin-right: 20px; margin-left: 20px;margin-top:20px">
+        
+            <table class="departure-table" cellspacing="0" cellpadding="0" style="width:100%;">
+                <thead>
+                    <tr>
+                        <th colspan="5">Departures & Arrivals</th>
+                        <th>Airline</th>
+                    </tr>
+                </thead>
+                @foreach($flightDetails as $ft)
+                <tbody>
+                    <tr>
+                        <td style="border-right:0 !important"><b>{{ $ft->to }}</b></td>
+                        <td
+                            style="border-right:0 !important;font-size: 13px;line-height: 16px;color: #333333; font-family: 'avenir-next',sans serif;">
+                            {{$ft->toDate}}
+                            {{ $ft->toTime }}
+                        </td>
+                        <td style="border-right:0 !important;text-align:center"> -
+                        </td>
+                        <td style="border-right:0 !important"><b>{{ $ft->from }}</b></td>
+                        <td
+                            style="font-size: 13px;line-height: 16px;color: #333333; font-family: 'avenir-next',sans serif;">
+                            {{$ft->fromDate}} {{ $ft->fromTime }}</td>
+                        <td>{{ $ft->airline }}</td>
+                    </tr>
+                </tbody>
+                @endforeach
+            </table> 
+</div>
+@endif
+@if (count($trainDetails) > 0)
+<div class="table-container"
+            style="width:90%;margin-bottom:20px;margin-right: 20px; margin-left: 20px;margin-top:20px">
+            <!-- train details -->
+      
+            <table class="departure-table" cellspacing="0" cellpadding="0" style="width:100%;">
+                <thead>
+                    <tr>
+                        <th colspan="5">Departures & Arrivals</th>
+                        <th>Train</th>
+                    </tr>
+                </thead>
+                @foreach($trainDetails as $td)
+                <tbody>
+                    <tr>
+                        <td style="border-right:0 !important"><b>{{ $td->to }}</b></td>
+                        <td
+                            style="border-right:0 !important;font-size: 13px;line-height: 16px;color: #333333; font-family:'avenir-next',sans serif !important;">
+                            {{$td->toDate}}
+                            {{ $td->toTime }}
+                        </td>
+                        <td style="border-right:0 !important;text-align:center">-
+                        </td>
+                        <td style="border-right:0 !important"><b>{{ $td->from }}</b></td>
+                        <td
+                            style="font-size: 13px;line-height: 16px;color: #333333; font-family: 'avenir-next',sans serif !important;">
+                            {{$td->fromDate}} {{ $td->fromTime }}</td>
+                        <td>{{ $td->trainNo }}</td>
+                    </tr>
+                </tbody>
+                @endforeach
+            </table>
+           
+        </div>
+        @endif
+        @if (count($similarTours) > 0)
+        <table cellspacing="0" cellpadding="0"
+            style="border-bottom:1px solid #ccc;width:90%;margin-top:10px;margin-right: 20px;margin-left: 20px;">
+            <tr>
+                <td>
+                    <p style="font-size: 17px;color: #024059; font-family: 'avenir-next',sans serif;" class="ft22">
+                        <b>More Date & Departure City Option</b>
+                    </p>
+                </td>
+            </tr>
+        </table>
+        <table cellspacing="0" cellpadding="0" style="width:100%;margin-right: 20px;margin-left: 20px;">
+            <tr>
+                <td>
+                    <p style="font-size:13px;color: #024059; font-family: 'avenir-next',sans serif;" class="ft22">
+                        <b>Other available departure dates for -
+                            {{ $d2d->startCity }}</b>
+                    </p>
+                </td>
+            </tr>
+        </table>
+        <table cellspacing="0" cellpadding="0" style="width:70%;margin-right: 20px;margin-left: 20px;">
+            @foreach($similarTours as $similarTour)
+            <tr>
+                <td style="border-right:1px solid #ccc;padding:5px 8px; width:10%">
+                    <p style="font-size:13px;color: #151515;font-weight:600;line-height: 20px; font-family: 'avenir-next',sans serif;"
+                        class="ft22">
+                        {{ $similarTour->startDate }}<br />
+                        <!-- 04,11,18,28 -->
+                    </p>
+                </td>
+            </tr>
+            @endforeach
+        </table>
+
+
+        <table cellspacing="0" cellpadding="0" style="width:100%;margin-right: 20px;margin-left: 20px;">
+            <tr>
+                <td>
+                    <p style="font-size:13px;color:#151515; font-family: 'avenir-next',sans serif;" class="ft22">
+                        <b>Other available departure city</b>
+                    </p>
+                </td>
+            </tr>
+        </table>
+        <table cellspacing="0" cellpadding="0" style="width:50%;margin-right: 20px; margin-left: 20px;">
+            @foreach($similarTours as $similarTour)
+            <tr>
+                <td style="border-right:1px solid #ccc;padding:5px 8px; width:10%">
+                    <p style="font-size:15px;color: #151515;font-weight:600;white-space:nowrap; font-family: 'avenir-next',sans serif;"
+                        class="ft22"><span style="color:#024059;padding-right: 20px;">Departure:</span>
+                        {{ $d2d->startCity }}</p>
+                </td>
+                <td style="padding:5px 8px;width:10%">
+                    <p style="font-size:15px;color:#151515;font-weight:600;white-space:nowrap; font-family: 'avenir-next',sans serif;"
+                        class="ft22"><span style="color:#024059;padding-right: 20px;">Joining/Leaving:</span>
+                        {{ $d2d->endCity }}
+                        (Joining/leaving)</p>
+                </td>
+            </tr>
+            @endforeach
+        </table>
+        @endif
+        <table cellspacing="0" cellpadding="0" style="width:90%;margin-right: 20px; margin-left: 20px;">
+            <tr>
+                <td>
+                    <p style="font-size:13px;color:#151515; font-family: 'avenir-next',sans serif;" class="ft22">NOTE:
+                        Tour prices may vary as per your
+                        travel
+                        date and departure city. For specific pricing, please let us know and we would be happy to
+                        assit
+                        you with the sames</p>
+                </td>
+            </tr>
+        </table>
+        <table cellspacing="0" cellpadding="0"
+            style="border-bottom:1px solid #ccc;width:90%;margin-right: 20px;margin-left: 20px;">
+            <tr>
+                <td>
+                    <p style="font-size: 17px;color: #024059; font-family: 'avenir-next',sans serif;" class="ft22">
+                        <b>Accomodation Details</b>
+                    </p>
+                </td>
+            </tr>
+        </table>
+        <div class="table-container" style="width:90%;margin-top:10px;margin-right: 20px;margin-left: 20px;">
+
+            <table class="departure-table" cellspacing="0" cellpadding="0" style="width:100%;">
+                <thead>
+                    <tr>
+                        <th style="border-right:0px">City - Country</th>
+                        <th style="border-right:0px">Hotel</th>
+                        <th style="border-right:0px">Check In - Check Out</th>
+                    </tr>
+                </thead>
+                @foreach($skeletonItinerary as $sk)
+                <tbody>
+                    <tr>
+                        <td>{{$sk->overnightAt}} - {{ $countryName }}</td>
+                        <td>{{$sk->hotelName}}</td>
+                        <td>{{$sk->date}}</td>
+                    </tr>
+                    <!-- <tr>
+                        <td>Chandigarh - India</td>
+                        <td>Hotel West End View</td>
+                        <td>18 Feb 2024 - 19 Feb 2024</td>
+                    </tr>
+                    <tr>
+                        <td>Chandigarh - India</td>
+                        <td>Hotel West End View</td>
+                        <td>18 Feb 2024 - 19 Feb 2024</td>
+                    </tr>
+                    <tr>
+                        <td>Chandigarh - India</td>
+                        <td>Hotel West End View</td>
+                        <td>18 Feb 2024 - 19 Feb 2024</td>
+                    </tr> -->
+
+                </tbody>
+                @endforeach
+            </table>
+
+        </div>
+        <table cellspacing="0" cellpadding="0"
+            style="border-bottom:1px solid #ccc;width:90%;margin-top:10px;margin-right: 20px; margin-left: 20px;">
+            <tr>
+                <td>
+                    <p style="font-size: 17px;color: #024059; font-family: 'avenir-next',sans serif;" class="ft22">
+                        <b>Cancellation Policy & Payment
+                            Terms</b>
+                    </p>
+                </td>
+            </tr>
+        </table>
+        <div class="table-container" style="width:90%;margin-top:10px;margin-right: 20px;margin-left: 20px;">
+            <table class="departure-table" cellspacing="0" cellpadding="0" style="width:100%;">
+                <tbody>
+                    <tr>
+                        <th
+                            style="width:30%;background-color:#024059;font-size: 12px;line-height: 18px; color: #ffffff;padding:8px">
+                            Cancellation received no. of days before
+                            departure
+                        </th>
+                        <td style="padding:8px;font-size: 13px">
+                            <p>Days<br /><b>0-5</b>
+                        </td>
+                        <td style="padding:8px;font-size: 13px">
+                            <p>Days<br /><b>6-15</b>
+                        </td>
+                        <td style="padding:8px;font-size: 13px">
+                            <p>Days<br /><b>16-30</b>
+                        </td>
+                        <td style="padding:8px;font-size: 13px">
+                            <p>Days<br /><b>16-30</b>
+                        </td>
+                        <td style="padding:8px;font-size: 13px">
+                            <p>Days<br /><b>16-30</b>
+                        </td>
+                        <td style="padding:8px;font-size: 13px">
+                            <p>Days<br /><b>61-90</b>
+                        </td>
+                        <td style="padding:8px;font-size: 13px">
+                            <p>Days<br /><b>91-120</b>
+                        </td>
+                        <td style="padding:8px;font-size: 13px">
+                            <p>Days<br /><b>121-900</b>
+                        </td>
+
+                    </tr>
+                    <tr>
+                        <th
+                            style="width:30%;background-color:#024059;font-size: 12px;line-height: 18px; color: #ffffff;padding:8px">
+                            Cancellation fee applicable on Net
+                            Tour price (per person)</th>
+                        <td style="padding:8px;font-size: 13px">
+                            <p>100% </b>
+                        </td>
+                        <td style="padding:8px;font-size: 13px">
+                            <p>75%</b>
+                        </td>
+                        <td style="padding:8px;font-size: 13px">
+                            <p>50%</b>
+                        </td>
+                        <td style="padding:8px;font-size: 13px">
+                            <p>40%</b>
+                        </td>
+                        <td style="padding:8px;font-size: 13px">
+                            <p>30%</b>
+                        </td>
+                        <td style="padding:8px;font-size: 13px">
+                            <p>20%</b>
+                        </td>
+                        <td style="padding:8px;font-size: 13px">
+                            <p>15%</b>
+                        </td>
+                        <td style="padding:8px;font-size: 13px">
+                            <p>10%</b>
+                        </td>
+
+                    </tr>
+
+
+                </tbody>
+            </table>
+        </div>
+        <table cellspacing="0" cellpadding="0" style="width:90%;margin-right: 20px; margin-left: 20px;">
+            <tr>
+                <td>
+                    <p style="font-size:13px;color: #024059;margin:8px 0; font-family: 'avenir-next',sans serif;"
+                        class="ft22">*In some cases if Air tickets
+                        are
+                        blocked
+                        /
+                        issued on special fare then cancellation charges levied by the airline, over and above the
+                        charges as mentioned in the table
+                        hereinabove shall be borne by the guest.</p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p style="font-size: 13px;line-height: 18px;color: #212221;margin:5px 0; font-family: 'avenir-next',sans serif;"
+                        class="ft22">Payments
+                        can be
+                        made by
+                        Credit/Debit
+                        Cards
+                        and Netbanking for Online Booking and Cheque, Demand Draft, NEFT, RTGS or IMPS for Offline
+                        Bookings.</p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p style="font-size: 13px;line-height: 18px;color: #212221;margin:0; font-family: 'avenir-next',sans serif;"
+                        class="ft22">Cheque/Demand
+                        Draft should be in favour of 'Musmade Hospitality Pvt Ltd.</p>
+                </td>
+            </tr>
+        </table>
+        <div class="footer"
+            style="position:fixed;bottom:0;background:#000;height:20px;width:100%;padding:10px 0;text-align:center;margin:auto;vertical-align:middle">
+            <p
+                style="color:#ffffffcf;text-align:center;font-family:'avenir-next',sans serif;font-size:12px;margin:auto;padding-bottom:50px">
+                ©2021-22 Musmade Hospitality Pvt Ltd. All Rights Reserved.</p>
+            <p></p>
+            <p></p>
+        </div>
+    </div>
+    <div id="page5-div" class="page-container">
+        <table cellspacing="0" cellpadding="0"
+            style="border-bottom:1px solid #ccc;width:90%;margin-right: 20px; margin-left: 20px;;margin-top:20px">
+            <tr>
+                <td>
+                    <p style="font-size: 17px;color: #024059; font-family: 'avenir-next',sans serif,sans serif;"
+                        class="ft22"><b>Inclusions & Exclusions</b></p>
+                </td>
+            </tr>
+        </table>
+        <table cellspacing="0" cellpadding="0" style="width:90%;margin-right: 20px; margin-left: 20px;">
+            <tr>
+                <td>
+                    <p style="font-size: 16px;color: #000; font-family: 'avenir-next',sans serif,sans serif;"
+                        class="ft22"><b>Inclusions</b></p>
+                </td>
+            </tr>
+
+        </table>
+        <div style="width:90%;margin-right: 20px;margin-left: 20px;">
+
+            <ul style="margin:0">
+                @foreach($inclusions as $in)
+                <li
+                    style="padding:5px 0;font-size: 16px;color: #212221; font-family: 'avenir-next',sans serif,sans serif;">
+                    {{ $in->description }}
+                </li>
+                @endforeach
+
+            </ul>
+
+        </div>
+        <!-- <table cellspacing="0" cellpadding="0" style="width:90%; margin-right: 20px; margin-left: 20px;">
+
+        
+        </table> -->
+        <table cellspacing="0" cellpadding="0" style="width:90%;margin-right: 20px;margin-left: 20px;">
+            <tr>
+                <td>
+                    <p style="font-size: 16px;color: #000; font-family: 'avenir-next',sans serif;" class="ft22">
+                        <b>Exclusions</b>
+                    </p>
+                </td>
+            </tr>
+
+        </table>
+        <div style="width:90%;margin-right: 20px;margin-left: 20px;">
+            <ul style="margin:0">
+                @foreach($exclusions as $ex)
+                <li
+                    style="padding:5px 0;font-size: 16px;color: #212221; font-family: 'avenir-next',sans serif,sans serif;">
+                    {{ $ex->description }}
+                </li>
+                @endforeach
+
+            </ul>
+        </div>
+        <!-- <table cellspacing="0" cellpadding="0" style="width:90%;margin-right: 20px;margin-left: 20px;">
+         
+        </table> -->
+        <table cellspacing="0" cellpadding="0" style="width:90%;margin-right: 20px;margin-left: 20px;">
+            <tr>
+                <td>
+                    <p style="font-size: 16px;color: #000; font-family: 'avenir-next',sans serif;" class="ft22">
+                        <b>Remarks</b>
+                    </p>
+                </td>
+            </tr>
+        </table>
+        <div style="width:90%;margin-right: 20px;margin-left: 20px;">
+            <ul style="margin:0">
+                @foreach($notes as $nt)
+                <li style="padding:5px 0;font-size: 16px;color: #212221; font-family: 'avenir-next',sans serif;">
+                    {{ $nt->note }}
+                </li>
+                @endforeach
+            </ul>
+        </div>
+
+
+        <table style="background:#000; width:100%;margin:60px 0 ">
+            <tr>
+                <td style="text-align:left;width:20%;padding: 15px 0 15px 30px;margin:auto"><span
+                        style="font-size: 17px;color: #fff; font-family: 'avenir-next',sans serif;">Toll free
+                        number</span>
+                    <p style="font-size: 16px;color: #fff;margin:5px 0"><b>1800 22 7979</b></p>
+                </td>
+                <td style="text-align:left;width:25%;padding: 15px 0 15px 15px;margin:auto"><span
+                        style="font-size: 17px;color:#fff; font-family: 'avenir-next',sans serif;">Write to us</span>
+                    <p style="font-size: 16px;color:#fff;margin:5px 0"><b>waari@gmail.com</b></p>
+                </td>
+            </tr>
+        </table>
+        <div class="footer"
+            style="position:fixed;bottom:0;background:#000;height:20px;width:100%;padding:10px 0;text-align:center;margin:auto;vertical-align:middle">
+            <p
+                style="color:#ffffffcf;text-align:center;font-family:'avenir-next',sans serif;font-size:12px;margin:auto;padding-bottom:50px">
+                ©2021-22 Musmade Hospitality Pvt Ltd. All Rights Reserved.</p>
+            <p></p>
+            <p></p>
+        </div>
+    </div>
+
+</body>
+
+</html>
