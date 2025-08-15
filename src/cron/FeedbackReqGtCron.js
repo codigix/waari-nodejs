@@ -1,16 +1,11 @@
 // feedbackReqGtCron.js
-
-import mysql from "mysql2/promise";
+import { createClient } from "@supabase/supabase-js";
 import axios from "axios";
 import cron from "node-cron";
+import "dotenv/config"; // loads variables from .env
 
-// DB Connection
-const db = await mysql.createPool({
-  host: "localhost",
-  user: "root",
-  password: "your_password",
-  database: "your_database",
-});
+// Supabase connection
+const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
 
 // Send WhatsApp Message
 async function sendWhatsAppMessage(messageData) {
@@ -21,8 +16,7 @@ async function sendWhatsAppMessage(messageData) {
       {
         headers: {
           "Content-Type": "application/json",
-          Authorization:
-            "Basic eTBPQnZHN2dSd3lvVW1HdXlqS2o5Y3FlNG9uQXQ2b3R0UkNLYjlDRmU3Zzo=",
+          Authorization: `Basic ${process.env.INTERAKT_API_KEY}`,
         },
       }
     );
@@ -36,17 +30,23 @@ async function sendWhatsAppMessage(messageData) {
 async function runFeedbackJob() {
   try {
     // Get enquiry details
-    const [enquiryDetails] = await db.query(
-      `SELECT * FROM enquirygrouptours WHERE enquiryProcess = 2`
-    );
+    const { data: enquiryDetails, error: enquiryError } = await supabase
+      .from("enquirygrouptours")
+      .select("*")
+      .eq("enquiryProcess", 2);
+
+    if (enquiryError) throw enquiryError;
 
     for (const enquiryDetail of enquiryDetails) {
       // Get group tour details
-      const [groupTours] = await db.query(
-        `SELECT * FROM grouptours WHERE groupTourId = ? LIMIT 1`,
-        [enquiryDetail.groupTourId]
-      );
-      if (groupTours.length === 0) continue;
+      const { data: groupTours, error: groupError } = await supabase
+        .from("grouptours")
+        .select("*")
+        .eq("groupTourId", enquiryDetail.groupTourId)
+        .limit(1);
+
+      if (groupError) throw groupError;
+      if (!groupTours || groupTours.length === 0) continue;
 
       const groupTour = groupTours[0];
 
@@ -59,18 +59,23 @@ async function runFeedbackJob() {
 
       if (differenceDays === 2) {
         // Get family head details
-        const [familyHeadDetails] = await db.query(
-          `SELECT * FROM grouptourdiscountdetails WHERE enquiryGroupId = ?`,
-          [enquiryDetail.enquiryGroupId]
-        );
+        const { data: familyHeadDetails, error: familyError } = await supabase
+          .from("grouptourdiscountdetails")
+          .select("*")
+          .eq("enquiryGroupId", enquiryDetail.enquiryGroupId);
+
+        if (familyError) throw familyError;
 
         for (const familyHeadDetail of familyHeadDetails) {
           // Check if tour not cancelled
-          const [guestDetails] = await db.query(
-            `SELECT * FROM grouptourguestdetails 
-             WHERE familyHeadGtId = ? AND isCancel = 0 LIMIT 1`,
-            [familyHeadDetail.familyHeadGtId]
-          );
+          const { data: guestDetails, error: guestError } = await supabase
+            .from("grouptourguestdetails")
+            .select("*")
+            .eq("familyHeadGtId", familyHeadDetail.familyHeadGtId)
+            .eq("isCancel", 0)
+            .limit(1);
+
+          if (guestError) throw guestError;
 
           if (guestDetails.length > 0) {
             const messageData = {
@@ -84,7 +89,7 @@ async function runFeedbackJob() {
                 bodyValues: [
                   familyHeadDetail.billingName,
                   groupTour.tourName,
-                  `${process.env.APP_URL || "https://yourdomain.com"}/feedback-form`,
+                  `${process.env.APP_URL}/feedback-form`,
                 ],
               },
             };
@@ -104,5 +109,5 @@ async function runFeedbackJob() {
 // Run every day at 10 AM
 cron.schedule("0 10 * * *", runFeedbackJob);
 
-// Uncomment to run immediately for testing
+// For testing:
 // runFeedbackJob();

@@ -1,18 +1,16 @@
 // happyJourneyCron.js
 
-import mysql from "mysql2/promise";
+import { createClient } from "@supabase/supabase-js";
 import axios from "axios";
 import cron from "node-cron";
 
-// Database connection
-const db = await mysql.createPool({
-  host: "localhost",
-  user: "root",
-  password: "your_password",
-  database: "your_database",
-});
+// Supabase connection
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_KEY
+);
 
-// Function to send WhatsApp message
+// Send WhatsApp message
 async function sendWhatsAppMessage(messageData) {
   try {
     const response = await axios.post(
@@ -32,25 +30,31 @@ async function sendWhatsAppMessage(messageData) {
   }
 }
 
-// Main job logic
+// Main job
 async function runHappyJourneyJob() {
   try {
-    // Get tours in process
-    const [enquiryDetails] = await db.query(
-      `SELECT * FROM enquirygrouptours WHERE enquiryProcess = 2`
-    );
+    // Get enquiries with process = 2
+    const { data: enquiryDetails, error: enquiryError } = await supabase
+      .from("enquirygrouptours")
+      .select("*")
+      .eq("enquiryProcess", 2);
+
+    if (enquiryError) throw enquiryError;
 
     for (const enquiryDetail of enquiryDetails) {
-      // Get group tour details
-      const [groupTours] = await db.query(
-        `SELECT * FROM grouptours WHERE groupTourId = ? LIMIT 1`,
-        [enquiryDetail.groupTourId]
-      );
-      if (groupTours.length === 0) continue;
+      // Get group tour
+      const { data: groupTours, error: groupTourError } = await supabase
+        .from("grouptours")
+        .select("*")
+        .eq("groupTourId", enquiryDetail.groupTourId)
+        .limit(1);
+
+      if (groupTourError) throw groupTourError;
+      if (!groupTours || groupTours.length === 0) continue;
 
       const groupTour = groupTours[0];
 
-      // Calculate one day before start date
+      // One day before start
       const tourStartDate = new Date(groupTour.startDate);
       const oneDayBefore = new Date(tourStartDate);
       oneDayBefore.setDate(tourStartDate.getDate() - 1);
@@ -59,40 +63,43 @@ async function runHappyJourneyJob() {
       const todayFormatted = today.toISOString().split("T")[0];
       const oneDayBeforeFormatted = oneDayBefore.toISOString().split("T")[0];
 
-      // Check if today is one day before start
       if (todayFormatted === oneDayBeforeFormatted) {
-        // Get family head details
-        const [familyHeadDetails] = await db.query(
-          `SELECT * FROM grouptourdiscountdetails WHERE enquiryGroupId = ?`,
-          [enquiryDetail.enquiryGroupId]
-        );
+        // Get family head
+        const { data: familyHeadDetails, error: familyError } = await supabase
+          .from("grouptourdiscountdetails")
+          .select("*")
+          .eq("enquiryGroupId", enquiryDetail.enquiryGroupId);
+
+        if (familyError) throw familyError;
 
         for (const familyHeadDetail of familyHeadDetails) {
-          // Check if not cancelled
-          const [guestDetails] = await db.query(
-            `SELECT * FROM grouptourguestdetails 
-             WHERE familyHeadGtId = ? AND isCancel = 0 LIMIT 1`,
-            [familyHeadDetail.familyHeadGtId]
-          );
+          // Check guest not cancelled
+          const { data: guestDetails, error: guestError } = await supabase
+            .from("grouptourguestdetails")
+            .select("*")
+            .eq("familyHeadGtId", familyHeadDetail.familyHeadGtId)
+            .eq("isCancel", 0)
+            .limit(1);
 
-          if (guestDetails.length > 0) {
-            const messageData = {
-              countryCode: "+91",
-              phoneNumber: familyHeadDetail.phoneNo || "",
-              callbackData: "some text here",
-              type: "Template",
-              template: {
-                name: "happy_journey_message_e6",
-                languageCode: "en",
-                bodyValues: [
-                  familyHeadDetail.billingName,
-                  groupTour.tourName,
-                ],
-              },
-            };
+          if (guestError) throw guestError;
+          if (!guestDetails || guestDetails.length === 0) continue;
 
-            await sendWhatsAppMessage(messageData);
-          }
+          const messageData = {
+            countryCode: "+91",
+            phoneNumber: familyHeadDetail.phoneNo || "",
+            callbackData: "some text here",
+            type: "Template",
+            template: {
+              name: "happy_journey_message_e6",
+              languageCode: "en",
+              bodyValues: [
+                familyHeadDetail.billingName,
+                groupTour.tourName,
+              ],
+            },
+          };
+
+          await sendWhatsAppMessage(messageData);
         }
       }
     }
@@ -103,8 +110,8 @@ async function runHappyJourneyJob() {
   }
 }
 
-// Schedule job to run daily at 10 AM
+// Run every day at 10 AM
 cron.schedule("0 10 * * *", runHappyJourneyJob);
 
-// For immediate test run
+// Uncomment to test now
 // runHappyJourneyJob();

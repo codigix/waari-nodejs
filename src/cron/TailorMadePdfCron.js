@@ -1,17 +1,15 @@
-// tailormadePdfCron.js
-import mysql from 'mysql2/promise';
+// tailormadePdfCronSupabase.js
+import { createClient } from '@supabase/supabase-js';
 import fs from 'fs';
 import path from 'path';
 import puppeteer from 'puppeteer';
 import ejs from 'ejs';
 
-// MySQL connection
-const db = await mysql.createConnection({
-  host: 'localhost',
-  user: 'root',
-  password: '',
-  database: 'your_db'
-});
+// Supabase connection
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_ROLE_KEY // Use service role key for server-side
+);
 
 async function modifyItineraryDescriptions(detailedItinerary) {
   return detailedItinerary.map(itinerary => {
@@ -47,74 +45,79 @@ async function run() {
       fs.mkdirSync(pdfDir, { recursive: true });
     }
 
-    const [tailorMadeData] = await db.execute(`
-      SELECT * FROM tailormades WHERE pdfUrl IS NULL
-    `);
+    // Get all tailorMade records without pdfUrl
+    const { data: tailorMadeData, error: err1 } = await supabase
+      .from('tailormades')
+      .select('*')
+      .is('pdfUrl', null);
+
+    if (err1) throw err1;
 
     for (let gt of tailorMadeData) {
-      const [[tailormadesdata]] = await db.execute(
-        'SELECT * FROM tailormades WHERE tailorMadeId = ?',
-        [gt.tailorMadeId]
-      );
+      const { data: tailormadesdata } = await supabase
+        .from('tailormades')
+        .select('*')
+        .eq('tailorMadeId', gt.tailorMadeId)
+        .single();
 
-      const [[{ countryName } = {}]] = await db.execute(
-        'SELECT countryName FROM countries WHERE countryId = ?',
-        [gt.tailorMadeId] // likely should be tailormadesdata.countryId
-      );
+      const { data: countryRow } = await supabase
+        .from('countries')
+        .select('countryName')
+        .eq('countryId', tailormadesdata.countryId)
+        .single();
 
-      const [cities] = await db.execute(
-        `SELECT citiesName
-         FROM tailormadecity
-         JOIN cities ON tailormadecity.cityId = cities.citiesId
-         WHERE tailorMadeId = ?`,
-        [gt.tailorMadeId]
-      );
+      const { data: cities } = await supabase
+        .from('tailormadecity')
+        .select('citiesName: cities (citiesName)')
+        .eq('tailorMadeId', gt.tailorMadeId);
 
-      const [detailedItinerary] = await db.execute(
-        'SELECT * FROM tailormadedetailitinerary WHERE tailorMadeId = ?',
-        [gt.tailorMadeId]
-      );
+      const { data: detailedItinerary } = await supabase
+        .from('tailormadedetailitinerary')
+        .select('*')
+        .eq('tailorMadeId', gt.tailorMadeId);
 
-      const [inclusions] = await db.execute(
-        'SELECT * FROM tailormadeinclusions WHERE tailorMadeId = ?',
-        [gt.tailorMadeId]
-      );
+      const { data: inclusions } = await supabase
+        .from('tailormadeinclusions')
+        .select('*')
+        .eq('tailorMadeId', gt.tailorMadeId);
 
-      const [exclusions] = await db.execute(
-        'SELECT * FROM tailormadeexclusions WHERE tailorMadeId = ?',
-        [gt.tailorMadeId]
-      );
+      const { data: exclusions } = await supabase
+        .from('tailormadeexclusions')
+        .select('*')
+        .eq('tailorMadeId', gt.tailorMadeId);
 
-      const [tourPrice] = await db.execute(
-        'SELECT * FROM tailormadepricediscount WHERE tailorMadeId = ?',
-        [gt.tailorMadeId]
-      );
+      const { data: tourPrice } = await supabase
+        .from('tailormadepricediscount')
+        .select('*')
+        .eq('tailorMadeId', gt.tailorMadeId);
 
-      const [flightDetails] = await db.execute(
-        'SELECT * FROM tailormadeflight WHERE tailorMadeId = ?',
-        [gt.tailorMadeId]
-      );
+      const { data: flightDetails } = await supabase
+        .from('tailormadeflight')
+        .select('*')
+        .eq('tailorMadeId', gt.tailorMadeId);
 
-      const [trainDetails] = await db.execute(
-        'SELECT * FROM tailormadetrain WHERE tailorMadeId = ?',
-        [gt.tailorMadeId]
-      );
+      const { data: trainDetails } = await supabase
+        .from('tailormadetrain')
+        .select('*')
+        .eq('tailorMadeId', gt.tailorMadeId);
 
-      const [[d2d]] = await db.execute(
-        'SELECT * FROM tailormaded2dtime WHERE tailorMadeId = ?',
-        [gt.tailorMadeId]
-      );
+      const { data: d2d } = await supabase
+        .from('tailormaded2dtime')
+        .select('*')
+        .eq('tailorMadeId', gt.tailorMadeId)
+        .single();
 
-      const [similarTours] = await db.execute(
-        'SELECT * FROM tailormades WHERE tourCode LIKE ? AND endDate >= ?',
-        [`%${gt.tourCode}`, gt.endDate]
-      );
+      const { data: similarTours } = await supabase
+        .from('tailormades')
+        .select('*')
+        .ilike('tourCode', `%${gt.tourCode}`)
+        .gte('endDate', gt.endDate);
 
       const modifiedItinerary = await modifyItineraryDescriptions(detailedItinerary);
 
       const data = {
         tailormadesdata,
-        cities,
+        cities: cities.map(c => ({ citiesName: c.citiesName })),
         detailedItinerary: modifiedItinerary,
         inclusions,
         exclusions,
@@ -122,10 +125,10 @@ async function run() {
         flightDetails,
         trainDetails,
         citiesCount: cities.length,
-        countryName,
+        countryName: countryRow?.countryName || '',
         d2d,
         similarTours,
-        // Images for template
+        // Images
         target011: path.join('public', 'images', 'target011.webp'),
         lineImg: path.join('public', 'images', 'Line3.svg'),
         day1: path.join('public', 'images', 'Day-11.jpg'),
@@ -147,7 +150,7 @@ async function run() {
         logo12: path.join('public', 'images', 'logo12.webp')
       };
 
-      // Render EJS template
+      // Render EJS
       const html = await ejs.renderFile(
         path.join(process.cwd(), 'views', 'tailor_pdf_new.ejs'),
         data
@@ -163,25 +166,25 @@ async function run() {
 
       await page.pdf({
         path: filePath,
-        format: 'A4', // Or use custom size: { width: '229.99mm', height: '410.11mm' }
+        format: 'A4',
         printBackground: true
       });
 
       await browser.close();
 
       const pdfUrl = `/public/tailorpdf/${filename}`;
-      await db.execute(
-        'UPDATE tailormades SET pdfUrl = ? WHERE tailorMadeId = ?',
-        [pdfUrl, tailormadesdata.tailorMadeId]
-      );
+      await supabase
+        .from('tailormades')
+        .update({ pdfUrl })
+        .eq('tailorMadeId', tailormadesdata.tailorMadeId);
 
       console.log(`Generated PDF: ${filename}`);
     }
 
-    console.log('Tailor Made PDFs created successfully.');
+    console.log('✅ Tailor Made PDFs created successfully.');
     process.exit();
   } catch (err) {
-    console.error('Error:', err.message);
+    console.error('❌ Error:', err.message);
     process.exit(1);
   }
 }

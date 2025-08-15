@@ -1,18 +1,15 @@
-// happyJourneyCronCt.js
-
-import mysql from "mysql2/promise";
+// happyJourneyCron.js
+import { createClient } from "@supabase/supabase-js";
 import axios from "axios";
 import cron from "node-cron";
 
-// DB connection
-const db = await mysql.createPool({
-  host: "localhost",
-  user: "root",
-  password: "your_password",
-  database: "your_database",
-});
+// Supabase connection
+const supabase = createClient(
+  "https://YOUR_PROJECT.supabase.co",
+  "YOUR_ANON_KEY"
+);
 
-// Send WhatsApp message function
+// Function to send WhatsApp message
 async function sendWhatsAppMessage(messageData) {
   try {
     const response = await axios.post(
@@ -32,68 +29,77 @@ async function sendWhatsAppMessage(messageData) {
   }
 }
 
-// Main job function
-async function runHappyJourneyCtJob() {
+async function runHappyJourneyJob() {
   try {
-    // Get custom tours in process
-    const [enquiryDetails] = await db.query(
-      `SELECT * FROM enquirycustomtours WHERE enquiryProcess = 2`
-    );
+    const { data: enquiryDetails, error: enquiryErr } = await supabase
+      .from("enquirygrouptours")
+      .select("*")
+      .eq("enquiryProcess", 2);
+
+    if (enquiryErr) throw enquiryErr;
 
     for (const enquiryDetail of enquiryDetails) {
-      const tourStartDate = new Date(enquiryDetail.startDate);
+      const { data: groupTours, error: groupErr } = await supabase
+        .from("grouptours")
+        .select("*")
+        .eq("groupTourId", enquiryDetail.groupTourId)
+        .limit(1);
+
+      if (groupErr) throw groupErr;
+      if (!groupTours || groupTours.length === 0) continue;
+
+      const groupTour = groupTours[0];
+      const tourStartDate = new Date(groupTour.startDate);
       const oneDayBefore = new Date(tourStartDate);
       oneDayBefore.setDate(tourStartDate.getDate() - 1);
 
-      const today = new Date();
-      const todayFormatted = today.toISOString().split("T")[0];
+      const today = new Date().toISOString().split("T")[0];
       const oneDayBeforeFormatted = oneDayBefore.toISOString().split("T")[0];
 
-      if (todayFormatted === oneDayBeforeFormatted) {
-        // Get family head details
-        const [familyHeadDetails] = await db.query(
-          `SELECT * FROM customtourdiscountdetails WHERE enquiryCustomId = ?`,
-          [enquiryDetail.enquiryCustomId]
-        );
+      if (today === oneDayBeforeFormatted) {
+        const { data: familyHeads, error: familyErr } = await supabase
+          .from("grouptourdiscountdetails")
+          .select("*")
+          .eq("enquiryGroupId", enquiryDetail.enquiryGroupId);
 
-        for (const familyHeadDetail of familyHeadDetails) {
-          // Check if not cancelled
-          const [guestDetails] = await db.query(
-            `SELECT * FROM customtourguestdetails 
-             WHERE enquiryDetailCustomId = ? AND isCancel = 0 LIMIT 1`,
-            [familyHeadDetail.enquiryDetailCustomId]
-          );
+        if (familyErr) throw familyErr;
+
+        for (const familyHead of familyHeads) {
+          const { data: guestDetails, error: guestErr } = await supabase
+            .from("grouptourguestdetails")
+            .select("*")
+            .eq("familyHeadGtId", familyHead.familyHeadGtId)
+            .eq("isCancel", 0)
+            .limit(1);
+
+          if (guestErr) throw guestErr;
 
           if (guestDetails.length > 0) {
             const messageData = {
               countryCode: "+91",
-              phoneNumber: familyHeadDetail.phoneNo || "",
+              phoneNumber: familyHead.phoneNo || "",
               callbackData: "some text here",
               type: "Template",
               template: {
                 name: "happy_journey_message_e6",
                 languageCode: "en",
-                bodyValues: [
-                  familyHeadDetail.billingName,
-                  enquiryDetail.groupName,
-                ],
+                bodyValues: [familyHead.billingName, groupTour.tourName],
               },
             };
-
             await sendWhatsAppMessage(messageData);
           }
         }
       }
     }
 
-    console.log("✅ Happy Journey (Custom Tour) Messages sent successfully");
+    console.log("✅ Group Tour Happy Journey Messages sent successfully");
   } catch (err) {
-    console.error("❌ Error in HappyJourneyCronCt:", err.message);
+    console.error("❌ Error in HappyJourneyCron:", err.message);
   }
 }
 
-// Schedule job for daily run at 10 AM
-cron.schedule("0 10 * * *", runHappyJourneyCtJob);
+// Run every day at 10 AM
+cron.schedule("0 10 * * *", runHappyJourneyJob);
 
-// For testing
-// runHappyJourneyCtJob();
+// Uncomment for testing
+// runHappyJourneyJob();

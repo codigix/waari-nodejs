@@ -1,30 +1,59 @@
 // models/Category.js
-const db = require("../db"); // our MySQL connection pool
+const { createClient } = require('@supabase/supabase-js');
+require('dotenv').config();
+
+const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
 
 const Category = {
   async getAll() {
-    const [rows] = await db.query("SELECT * FROM categories");
-    return rows;
+    const { data, error } = await supabase
+      .from('categories')
+      .select('*');
+
+    if (error) throw new Error(error.message);
+    return data;
   },
 
   async findById(id) {
-    const [rows] = await db.query("SELECT * FROM categories WHERE id = ?", [id]);
-    return rows[0] || null;
+    const { data, error } = await supabase
+      .from('categories')
+      .select('*')
+      .eq('id', id)
+      .single();
+
+    if (error && error.code !== 'PGRST116') throw new Error(error.message); // no rows found
+    return data || null;
   },
 
   async create(data) {
-    const [result] = await db.query("INSERT INTO categories SET ?", data);
-    return result.insertId;
+    const { data: inserted, error } = await supabase
+      .from('categories')
+      .insert([data])
+      .select('id')
+      .single();
+
+    if (error) throw new Error(error.message);
+    return inserted.id;
   },
 
   async update(id, data) {
-    const [result] = await db.query("UPDATE categories SET ? WHERE id = ?", [data, id]);
-    return result.affectedRows > 0;
+    const { error } = await supabase
+      .from('categories')
+      .update(data)
+      .eq('id', id);
+
+    if (error) throw new Error(error.message);
+    return true;
   },
 
   async delete(id) {
-    const [result] = await db.query("DELETE FROM categories WHERE id = ?", [id]);
-    return result.affectedRows > 0;
+    const { error } = await supabase
+      .from('categories')
+      .delete()
+      .eq('id', id);
+
+    if (error) throw new Error(error.message);
+    return true;
   }
 };
 

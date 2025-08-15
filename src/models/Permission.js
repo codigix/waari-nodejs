@@ -1,30 +1,59 @@
 // models/Permission.js
-const db = require("../db"); // MySQL connection pool
+const { createClient } = require('@supabase/supabase-js');
+require('dotenv').config();
+
+const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
 
 const Permission = {
   async getAll() {
-    const [rows] = await db.query("SELECT * FROM permission");
-    return rows;
+    const { data, error } = await supabase
+      .from('permission')
+      .select('*');
+
+    if (error) throw new Error(error.message);
+    return data;
   },
 
   async findById(id) {
-    const [rows] = await db.query("SELECT * FROM permission WHERE id = ?", [id]);
-    return rows[0] || null;
+    const { data, error } = await supabase
+      .from('permission')
+      .select('*')
+      .eq('id', id)
+      .single();
+
+    if (error && error.code !== 'PGRST116') throw new Error(error.message);
+    return data || null;
   },
 
   async create(data) {
-    const [result] = await db.query("INSERT INTO permission SET ?", data);
-    return result.insertId;
+    const { data: inserted, error } = await supabase
+      .from('permission')
+      .insert([data])
+      .select('id')
+      .single();
+
+    if (error) throw new Error(error.message);
+    return inserted.id;
   },
 
   async update(id, data) {
-    const [result] = await db.query("UPDATE permission SET ? WHERE id = ?", [data, id]);
-    return result.affectedRows > 0;
+    const { error } = await supabase
+      .from('permission')
+      .update(data)
+      .eq('id', id);
+
+    if (error) throw new Error(error.message);
+    return true;
   },
 
   async delete(id) {
-    const [result] = await db.query("DELETE FROM permission WHERE id = ?", [id]);
-    return result.affectedRows > 0;
+    const { error } = await supabase
+      .from('permission')
+      .delete()
+      .eq('id', id);
+
+    if (error) throw new Error(error.message);
+    return true;
   }
 };
 

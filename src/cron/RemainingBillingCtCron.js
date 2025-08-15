@@ -1,26 +1,27 @@
-// remainingBillingCtCron.js
+// remainingBillingCtCron_supabase.js
 
 import cron from "node-cron";
-import mysql from "mysql2/promise";
 import axios from "axios";
+import { createClient } from "@supabase/supabase-js";
 
-// ✅ MySQL DB Connection
-const db = await mysql.createPool({
-  host: "localhost",
-  user: "root",
-  password: "",
-  database: "your_database_name"
-});
+// ✅ Supabase connection
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_ROLE_KEY // service role for full DB access
+);
 
 // ✅ Cron job schedule: Run daily at midnight
 cron.schedule("0 0 * * *", async () => {
-  console.log("Running Remaining Billing CT Cron...");
+  console.log("Running Remaining Billing CT Cron (Supabase)...");
 
   try {
     // 1. Fetch enquiry details for tours in process
-    const [enquiries] = await db.query(
-      "SELECT * FROM enquirycustomtours WHERE enquiryProcess = 2"
-    );
+    const { data: enquiries, error: enquiriesError } = await supabase
+      .from("enquirycustomtours")
+      .select("*")
+      .eq("enquiryProcess", 2);
+
+    if (enquiriesError) throw enquiriesError;
 
     for (const enquiry of enquiries) {
       // 2. Calculate date 40 days before startDate
@@ -34,26 +35,35 @@ cron.schedule("0 0 * * *", async () => {
 
       if (currentDate === compareDate) {
         // 3. Retrieve family head details
-        const [familyHeads] = await db.query(
-          "SELECT * FROM customtourdiscountdetails WHERE enquiryCustomId = ?",
-          [enquiry.enquiryCustomId]
-        );
+        const { data: familyHeads, error: familyError } = await supabase
+          .from("customtourdiscountdetails")
+          .select("*")
+          .eq("enquiryCustomId", enquiry.enquiryCustomId);
+
+        if (familyError) throw familyError;
 
         for (const head of familyHeads) {
           // 4. Check if not cancelled
-          const [notCancelled] = await db.query(
-            "SELECT * FROM customtourguestdetails WHERE enquiryDetailCustomId = ? AND isCancel = 0 LIMIT 1",
-            [head.enquiryDetailCustomId]
-          );
+          const { data: notCancelled, error: cancelError } = await supabase
+            .from("customtourguestdetails")
+            .select("*")
+            .eq("enquiryDetailCustomId", head.enquiryDetailCustomId)
+            .eq("isCancel", 0)
+            .limit(1);
+
+          if (cancelError) throw cancelError;
 
           if (notCancelled.length > 0) {
             // 5. Get last payment balance
-            const [payment] = await db.query(
-              `SELECT balance FROM customtourpaymentdetails 
-               WHERE enquiryCustomId = ? AND enquiryDetailCustomId = ? 
-               ORDER BY created_at DESC LIMIT 1`,
-              [enquiry.enquiryCustomId, head.enquiryDetailCustomId]
-            );
+            const { data: payment, error: paymentError } = await supabase
+              .from("customtourpaymentdetails")
+              .select("balance")
+              .eq("enquiryCustomId", enquiry.enquiryCustomId)
+              .eq("enquiryDetailCustomId", head.enquiryDetailCustomId)
+              .order("created_at", { ascending: false })
+              .limit(1);
+
+            if (paymentError) throw paymentError;
 
             const balance = payment.length ? payment[0].balance : 0;
 
@@ -98,8 +108,8 @@ cron.schedule("0 0 * * *", async () => {
       }
     }
 
-    console.log("✅ Remaining Billing Messages sent successfully");
+    console.log("✅ Remaining Billing Messages sent successfully (Supabase)");
   } catch (error) {
-    console.error("❌ Error in cron job:", error.message);
+    console.error("❌ Error in cron job (Supabase):", error.message);
   }
 });

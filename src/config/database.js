@@ -8,8 +8,9 @@ module.exports = {
     |--------------------------------------------------------------------------
     | Default Database Connection Name
     |--------------------------------------------------------------------------
+    | Supabase uses PostgreSQL, so we set default to 'pgsql'
     */
-    default: process.env.DB_CONNECTION || 'mysql',
+    default: process.env.DB_CONNECTION || 'pgsql',
 
     /*
     |--------------------------------------------------------------------------
@@ -17,62 +18,28 @@ module.exports = {
     |--------------------------------------------------------------------------
     */
     connections: {
+        pgsql: {
+            driver: 'pgsql',
+            url: process.env.DATABASE_URL, // optional full connection string
+            host: process.env.DB_HOST || '127.0.0.1',
+            port: parseInt(process.env.DB_PORT || '5432', 10),
+            database: process.env.DB_DATABASE || 'postgres',
+            username: process.env.DB_USERNAME || 'postgres',
+            password: process.env.DB_PASSWORD || '',
+            charset: 'utf8',
+            prefix: '',
+            prefixIndexes: true,
+            searchPath: 'public',
+            sslmode: 'require', // Supabase requires SSL
+        },
+
+        // Keeping SQLite only if you need it locally
         sqlite: {
             driver: 'sqlite',
             url: process.env.DATABASE_URL,
             database: process.env.DB_DATABASE || path.join(__dirname, 'database.sqlite'),
             prefix: '',
             foreignKeyConstraints: process.env.DB_FOREIGN_KEYS !== 'false',
-        },
-
-        mysql: {
-            driver: 'mysql',
-            url: process.env.DATABASE_URL,
-            host: process.env.DB_HOST || '127.0.0.1',
-            port: parseInt(process.env.DB_PORT || '3306', 10),
-            database: process.env.DB_DATABASE || 'forge',
-            username: process.env.DB_USERNAME || 'forge',
-            password: process.env.DB_PASSWORD || '',
-            unixSocket: process.env.DB_SOCKET || '',
-            charset: 'utf8mb4',
-            collation: 'utf8mb4_unicode_ci',
-            prefix: '',
-            prefixIndexes: true,
-            strict: false,
-            engine: null,
-            options: {
-                ssl: process.env.MYSQL_ATTR_SSL_CA ? { ca: process.env.MYSQL_ATTR_SSL_CA } : undefined,
-            },
-        },
-
-        pgsql: {
-            driver: 'pgsql',
-            url: process.env.DATABASE_URL,
-            host: process.env.DB_HOST || '127.0.0.1',
-            port: parseInt(process.env.DB_PORT || '5432', 10),
-            database: process.env.DB_DATABASE || 'forge',
-            username: process.env.DB_USERNAME || 'forge',
-            password: process.env.DB_PASSWORD || '',
-            charset: 'utf8',
-            prefix: '',
-            prefixIndexes: true,
-            searchPath: 'public',
-            sslmode: 'prefer',
-        },
-
-        sqlsrv: {
-            driver: 'sqlsrv',
-            url: process.env.DATABASE_URL,
-            host: process.env.DB_HOST || 'localhost',
-            port: parseInt(process.env.DB_PORT || '1433', 10),
-            database: process.env.DB_DATABASE || 'forge',
-            username: process.env.DB_USERNAME || 'forge',
-            password: process.env.DB_PASSWORD || '',
-            charset: 'utf8',
-            prefix: '',
-            prefixIndexes: true,
-            // encrypt: process.env.DB_ENCRYPT || 'yes',
-            // trustServerCertificate: process.env.DB_TRUST_SERVER_CERTIFICATE || 'false',
         },
     },
 
@@ -92,7 +59,9 @@ module.exports = {
         client: process.env.REDIS_CLIENT || 'redis',
         options: {
             cluster: process.env.REDIS_CLUSTER || 'redis',
-            prefix: process.env.REDIS_PREFIX || slugify(process.env.APP_NAME || 'nodeapp', { lower: true, replacement: '_' }) + '_database_',
+            prefix:
+                process.env.REDIS_PREFIX ||
+                slugify(process.env.APP_NAME || 'nodeapp', { lower: true, replacement: '_' }) + '_database_',
         },
         default: {
             url: process.env.REDIS_URL,

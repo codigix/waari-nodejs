@@ -1,16 +1,10 @@
-// feedbackReqCtCron.js
-
-import mysql from "mysql2/promise";
+import { createClient } from "@supabase/supabase-js";
 import axios from "axios";
 import cron from "node-cron";
+import "dotenv/config"; // to load .env
 
-// Database connection config
-const db = await mysql.createPool({
-  host: "localhost",
-  user: "root",
-  password: "your_password",
-  database: "your_database",
-});
+// Supabase connection
+const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
 
 // Function to send WhatsApp message
 async function sendWhatsAppMessage(messageData) {
@@ -21,7 +15,7 @@ async function sendWhatsAppMessage(messageData) {
       {
         headers: {
           "Content-Type": "application/json",
-          Authorization: "Basic eTBPQnZHN2dSd3lvVW1HdXlqS2o5Y3FlNG9uQXQ2b3R0UkNLYjlDRmU3Zzo=",
+          Authorization: `Basic ${process.env.INTERAKT_API_KEY}`, // move key to env
         },
       }
     );
@@ -34,9 +28,12 @@ async function sendWhatsAppMessage(messageData) {
 // Main job logic
 async function runFeedbackJob() {
   try {
-    const [enquiryDetails] = await db.query(
-      `SELECT * FROM enquirycustomtours WHERE enquiryProcess = 2`
-    );
+    const { data: enquiryDetails, error: enquiryError } = await supabase
+      .from("enquirycustomtours")
+      .select("*")
+      .eq("enquiryProcess", 2);
+
+    if (enquiryError) throw enquiryError;
 
     for (const enquiryDetail of enquiryDetails) {
       const tourEndDate = new Date(enquiryDetail.endDate);
@@ -46,17 +43,22 @@ async function runFeedbackJob() {
       );
 
       if (differenceDays === 2) {
-        const [familyHeadDetails] = await db.query(
-          `SELECT * FROM customtourdiscountdetails WHERE enquiryCustomId = ?`,
-          [enquiryDetail.enquiryCustomId]
-        );
+        const { data: familyHeadDetails, error: familyError } = await supabase
+          .from("customtourdiscountdetails")
+          .select("*")
+          .eq("enquiryCustomId", enquiryDetail.enquiryCustomId);
+
+        if (familyError) throw familyError;
 
         for (const familyHeadDetail of familyHeadDetails) {
-          const [familyHeadCancelTour] = await db.query(
-            `SELECT * FROM customtourguestdetails 
-             WHERE enquiryDetailCustomId = ? AND isCancel = 0 LIMIT 1`,
-            [familyHeadDetail.enquiryDetailCustomId]
-          );
+          const { data: familyHeadCancelTour, error: cancelError } = await supabase
+            .from("customtourguestdetails")
+            .select("*")
+            .eq("enquiryDetailCustomId", familyHeadDetail.enquiryDetailCustomId)
+            .eq("isCancel", 0)
+            .limit(1);
+
+          if (cancelError) throw cancelError;
 
           if (familyHeadCancelTour.length > 0) {
             const messageData = {
@@ -87,8 +89,8 @@ async function runFeedbackJob() {
   }
 }
 
-// Schedule job to run daily at 10 AM (example)
+// Schedule job to run daily at 10 AM
 cron.schedule("0 10 * * *", runFeedbackJob);
 
-// For immediate test run
+// For testing now
 // runFeedbackJob();

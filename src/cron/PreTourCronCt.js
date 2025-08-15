@@ -1,27 +1,30 @@
-// preTourCronCt.js
+// preTourCronCt.js (Supabase Version)
 import cron from "node-cron";
-import mysql from "mysql2/promise";
 import axios from "axios";
 import dayjs from "dayjs";
+import dotenv from "dotenv";
+import { createClient } from "@supabase/supabase-js";
 
-// MySQL Connection
-const db = await mysql.createPool({
-  host: "localhost",
-  user: "root",
-  password: "your_password",
-  database: "your_db_name",
-});
+dotenv.config();
+
+// Supabase connection
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_ROLE_KEY // Service role for full read access
+);
 
 // Cron job - runs every day at 00:00
 cron.schedule("0 0 * * *", async () => {
-  console.log("Running PreTourCronCt job...");
+  console.log("🚀 Running PreTourCronCt job...");
 
   try {
-    // Fetch enquiry details for tours in process
-    const [enquiryDetails] = await db.query(
-      "SELECT * FROM enquirycustomtours WHERE enquiryProcess = ?",
-      [2]
-    );
+    // 1. Fetch enquiry details for tours in process
+    const { data: enquiryDetails, error: enquiryError } = await supabase
+      .from("enquirycustomtours")
+      .select("*")
+      .eq("enquiryProcess", 2);
+
+    if (enquiryError) throw enquiryError;
 
     for (const enquiry of enquiryDetails) {
       const tourStartDate = dayjs(enquiry.startDate);
@@ -29,18 +32,24 @@ cron.schedule("0 0 * * *", async () => {
       const currentDate = dayjs().format("YYYY-MM-DD");
 
       if (currentDate === tenDaysBefore) {
-        // Get family head details
-        const [familyHeadDetails] = await db.query(
-          "SELECT * FROM customtourdiscountdetails WHERE enquiryCustomId = ?",
-          [enquiry.enquiryCustomId]
-        );
+        // 2. Get family head details
+        const { data: familyHeadDetails, error: familyError } = await supabase
+          .from("customtourdiscountdetails")
+          .select("*")
+          .eq("enquiryCustomId", enquiry.enquiryCustomId);
+
+        if (familyError) throw familyError;
 
         for (const family of familyHeadDetails) {
-          // Check family head cancel status
-          const [cancelCheck] = await db.query(
-            "SELECT * FROM customtourguestdetails WHERE enquiryDetailCustomId = ? AND isCancel = 0 LIMIT 1",
-            [family.enquiryDetailCustomId]
-          );
+          // 3. Check family head cancel status
+          const { data: cancelCheck, error: cancelError } = await supabase
+            .from("customtourguestdetails")
+            .select("*")
+            .eq("enquiryDetailCustomId", family.enquiryDetailCustomId)
+            .eq("isCancel", 0)
+            .limit(1);
+
+          if (cancelError) throw cancelError;
 
           if (cancelCheck.length > 0) {
             const messageData = {
@@ -63,17 +72,17 @@ cron.schedule("0 0 * * *", async () => {
                     "Basic eTBPQnZHN2dSd3lvVW1HdXlqS2o5Y3FlNG9uQXQ2b3R0UkNLYjlDRmU3Zzo=",
                 },
               });
-              console.log(`Message sent to ${family.phoneNo}`);
+              console.log(`✅ Message sent to ${family.phoneNo}`);
             } catch (err) {
-              console.error(`Failed to send message to ${family.phoneNo}:`, err.message);
+              console.error(`❌ Failed to send message to ${family.phoneNo}:`, err.message);
             }
           }
         }
       }
     }
 
-    console.log("Messages sent successfully");
+    console.log("✅ Messages sent successfully");
   } catch (error) {
-    console.error("An error occurred:", error.message);
+    console.error("❌ An error occurred:", error.message);
   }
 });

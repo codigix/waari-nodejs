@@ -18,7 +18,7 @@ const connections = {
     queue: 'default',
     retryAfter: 90,
     afterCommit: false,
-    // Example: Implement with a DB-backed queue (custom)
+    // Here you would implement Supabase/Postgres-backed queue logic
   },
 
   beanstalkd: {
@@ -68,13 +68,13 @@ const connections = {
 };
 
 const batching = {
-  database: process.env.DB_CONNECTION || 'mysql',
+  database: process.env.DB_CONNECTION || 'pgsql', // switched to Postgres
   table: 'job_batches',
 };
 
 const failed = {
   driver: process.env.QUEUE_FAILED_DRIVER || 'database-uuids',
-  database: process.env.DB_CONNECTION || 'mysql',
+  database: process.env.DB_CONNECTION || 'pgsql', // switched to Postgres
   table: 'failed_jobs',
 };
 

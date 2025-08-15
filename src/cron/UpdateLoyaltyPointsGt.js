@@ -1,22 +1,15 @@
-// tailormadePrintCron.js
+// tailormadePrintCron.js - Supabase version
 import fs from 'fs';
 import path from 'path';
-import mysql from 'mysql2/promise';
 import puppeteer from 'puppeteer';
 import ejs from 'ejs';
 import dotenv from 'dotenv';
+import { createClient } from '@supabase/supabase-js';
 
 dotenv.config();
 
-// DB Connection
-const db = await mysql.createPool({
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_DATABASE,
-  waitForConnections: true,
-  connectionLimit: 10
-});
+// Create Supabase client
+const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
 
 async function runTailorMadePrintCron() {
   try {
@@ -25,76 +18,82 @@ async function runTailorMadePrintCron() {
       fs.mkdirSync(pdfDirectory, { recursive: true });
     }
 
-    // Get all tailorMade entries without printUrl
-    const [tailorMadeData] = await db.query(
-      `SELECT * FROM tailormades WHERE printUrl IS NULL`
-    );
+    // 1. Get all tailorMade entries without printUrl
+    const { data: tailorMadeData, error: tmError } = await supabase
+      .from('tailormades')
+      .select('*')
+      .is('printUrl', null);
+
+    if (tmError) throw tmError;
 
     for (const gt of tailorMadeData) {
       // Fetch related data
-      const [[tailormadesdata]] = await db.query(
-        `SELECT * FROM tailormades WHERE tailorMadeId = ?`,
-        [gt.tailorMadeId]
-      );
+      const { data: tailormadesdata } = await supabase
+        .from('tailormades')
+        .select('*')
+        .eq('tailorMadeId', gt.tailorMadeId)
+        .single();
 
-      const [[countryNameRow]] = await db.query(
-        `SELECT countryName FROM countries WHERE countryId = ?`,
-        [gt.tailorMadeId]
-      );
-      const countryName = countryNameRow?.countryName || '';
+      const { data: countryRow } = await supabase
+        .from('countries')
+        .select('countryName')
+        .eq('countryId', gt.tailorMadeId) // NOTE: verify column
+        .single();
+      const countryName = countryRow?.countryName || '';
 
-      const [cities] = await db.query(
-        `SELECT citiesName FROM tailormadecity
-         JOIN cities ON tailormadecity.cityId = cities.citiesId
-         WHERE tailorMadeId = ?`,
-        [gt.tailorMadeId]
-      );
-      const citiesCount = cities.length;
+      const { data: cities } = await supabase
+        .from('tailormadecity')
+        .select('cities(citiesName)')
+        .eq('tailorMadeId', gt.tailorMadeId);
 
-      const [detailedItinerary] = await db.query(
-        `SELECT * FROM tailormadedetailitinerary WHERE tailorMadeId = ?`,
-        [gt.tailorMadeId]
-      );
+      const citiesCount = cities?.length || 0;
 
-      const [inclusions] = await db.query(
-        `SELECT * FROM tailormadeinclusions WHERE tailorMadeId = ?`,
-        [gt.tailorMadeId]
-      );
+      const { data: detailedItinerary } = await supabase
+        .from('tailormadedetailitinerary')
+        .select('*')
+        .eq('tailorMadeId', gt.tailorMadeId);
 
-      const [exclusions] = await db.query(
-        `SELECT * FROM tailormadeexclusions WHERE tailorMadeId = ?`,
-        [gt.tailorMadeId]
-      );
+      const { data: inclusions } = await supabase
+        .from('tailormadeinclusions')
+        .select('*')
+        .eq('tailorMadeId', gt.tailorMadeId);
 
-      const [tourPrice] = await db.query(
-        `SELECT * FROM tailormadepricediscount WHERE tailorMadeId = ?`,
-        [gt.tailorMadeId]
-      );
+      const { data: exclusions } = await supabase
+        .from('tailormadeexclusions')
+        .select('*')
+        .eq('tailorMadeId', gt.tailorMadeId);
 
-      const [flightDetails] = await db.query(
-        `SELECT * FROM tailormadeflight WHERE tailorMadeId = ?`,
-        [gt.tailorMadeId]
-      );
+      const { data: tourPrice } = await supabase
+        .from('tailormadepricediscount')
+        .select('*')
+        .eq('tailorMadeId', gt.tailorMadeId);
 
-      const [trainDetails] = await db.query(
-        `SELECT * FROM tailormadetrain WHERE tailorMadeId = ?`,
-        [gt.tailorMadeId]
-      );
+      const { data: flightDetails } = await supabase
+        .from('tailormadeflight')
+        .select('*')
+        .eq('tailorMadeId', gt.tailorMadeId);
 
-      const [notes] = await db.query(
-        `SELECT * FROM tailormadedetails WHERE tailorMadeId = ?`,
-        [gt.tailorMadeId]
-      );
+      const { data: trainDetails } = await supabase
+        .from('tailormadetrain')
+        .select('*')
+        .eq('tailorMadeId', gt.tailorMadeId);
 
-      const [[d2d]] = await db.query(
-        `SELECT * FROM tailormaded2dtime WHERE tailorMadeId = ?`,
-        [gt.tailorMadeId]
-      );
+      const { data: notes } = await supabase
+        .from('tailormadedetails')
+        .select('*')
+        .eq('tailorMadeId', gt.tailorMadeId);
 
-      const [similarTours] = await db.query(
-        `SELECT * FROM tailormades WHERE tourCode LIKE ? AND endDate >= ?`,
-        [`%${gt.tourCode}`, gt.endDate]
-      );
+      const { data: d2d } = await supabase
+        .from('tailormaded2dtime')
+        .select('*')
+        .eq('tailorMadeId', gt.tailorMadeId)
+        .single();
+
+      const { data: similarTours } = await supabase
+        .from('tailormades')
+        .select('*')
+        .like('tourCode', `%${gt.tourCode}`)
+        .gte('endDate', gt.endDate);
 
       const data = {
         tailormadesdata,
@@ -113,7 +112,10 @@ async function runTailorMadePrintCron() {
       };
 
       // Render HTML from template
-      const html = await ejs.renderFile(path.join(process.cwd(), 'views', 'tailormadeprint.ejs'), data);
+      const html = await ejs.renderFile(
+        path.join(process.cwd(), 'views', 'tailormadeprint.ejs'),
+        data
+      );
 
       // Generate PDF
       const browser = await puppeteer.launch();
@@ -128,14 +130,14 @@ async function runTailorMadePrintCron() {
 
       const printUrl = `/public/tailormadeprint/${printname}`;
 
-      // Update DB with new PDF path
-      await db.query(
-        `UPDATE tailormades SET printUrl = ? WHERE tailorMadeId = ?`,
-        [printUrl, gt.tailorMadeId]
-      );
+      // Update record with PDF URL
+      await supabase
+        .from('tailormades')
+        .update({ printUrl })
+        .eq('tailorMadeId', gt.tailorMadeId);
     }
 
-    console.log('Tailor made print PDF created');
+    console.log('Tailor made print PDFs created');
     process.exit(0);
   } catch (error) {
     console.error('Error:', error.message);

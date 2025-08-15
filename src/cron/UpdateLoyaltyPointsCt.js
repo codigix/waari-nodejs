@@ -1,22 +1,22 @@
-// updateLoyaltyPointsCt.js
-const mysql = require('mysql2/promise');
-const axios = require('axios');
-const dayjs = require('dayjs');
+// updateLoyaltyPointsCt_supabase.js
+import { createClient } from '@supabase/supabase-js';
+import axios from 'axios';
+import dayjs from 'dayjs';
+
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_ROLE_KEY // Needs RLS bypass for inserts/updates
+);
 
 (async () => {
-  const connection = await mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: '',
-    database: 'YOUR_DB_NAME'
-  });
-
   try {
-    await connection.beginTransaction();
+    // Step 1: Get enquirycustomtours where enquiryProcess = 2
+    const { data: enquiryDetails, error: enqErr } = await supabase
+      .from('enquirycustomtours')
+      .select('*')
+      .eq('enquiryProcess', 2);
 
-    const [enquiryDetails] = await connection.execute(
-      `SELECT * FROM enquirycustomtours WHERE enquiryProcess = 2`
-    );
+    if (enqErr) throw enqErr;
 
     for (const enqDetail of enquiryDetails) {
       const tourEndDate = dayjs(enqDetail.endDate);
@@ -24,68 +24,83 @@ const dayjs = require('dayjs');
       const differenceDays = currentDate.diff(tourEndDate, 'day');
 
       if (differenceDays === 1) {
-        const [familyHeads] = await connection.execute(
-          `SELECT * FROM customtourenquirydetails WHERE enquiryCustomId = ? AND isLoyaltyPointSend = 0`,
-          [enqDetail.enquiryCustomId]
-        );
+        // Step 2: Get family heads
+        const { data: familyHeads } = await supabase
+          .from('customtourenquirydetails')
+          .select('*')
+          .eq('enquiryCustomId', enqDetail.enquiryCustomId)
+          .eq('isLoyaltyPointSend', 0);
 
-        const [[guestRef]] = await connection.execute(
-          `SELECT * FROM users WHERE guestId = ?`,
-          [enqDetail.guestRefId]
-        );
+        // Step 3: Guest Ref
+        const { data: guestRefArr } = await supabase
+          .from('users')
+          .select('*')
+          .eq('guestId', enqDetail.guestRefId);
+        const guestRef = guestRefArr?.[0];
 
         for (const head of familyHeads) {
-          const [[discountDetails]] = await connection.execute(
-            `SELECT * FROM customtourdiscountdetails WHERE enquiryDetailCustomId = ?`,
-            [head.enquiryDetailCustomId]
-          );
+          // Discount details
+          const { data: discountDetailsArr } = await supabase
+            .from('customtourdiscountdetails')
+            .select('*')
+            .eq('enquiryDetailCustomId', head.enquiryDetailCustomId);
+          const discountDetails = discountDetailsArr?.[0];
 
-          const [[headDetails]] = await connection.execute(
-            `SELECT * FROM users WHERE guestId = ?`,
-            [head.guestId]
-          );
+          // Head details
+          const { data: headDetailsArr } = await supabase
+            .from('users')
+            .select('*')
+            .eq('guestId', head.guestId);
+          const headDetails = headDetailsArr?.[0];
 
-          const [[tourCountObj]] = await connection.execute(
-            `SELECT COUNT(*) AS cnt FROM customtourguestdetails WHERE guestId = ? AND isCancel = 0`,
-            [head.guestId]
-          );
+          // Tour counts
+          const { count: tourCount } = await supabase
+            .from('customtourguestdetails')
+            .select('*', { count: 'exact', head: true })
+            .eq('guestId', head.guestId)
+            .eq('isCancel', 0);
 
-          const [[tourCountGtObj]] = await connection.execute(
-            `SELECT COUNT(*) AS cnt FROM grouptourguestdetails WHERE guestId = ? AND isCancel = 0`,
-            [head.guestId]
-          );
+          const { count: tourCountGt } = await supabase
+            .from('grouptourguestdetails')
+            .select('*', { count: 'exact', head: true })
+            .eq('guestId', head.guestId)
+            .eq('isCancel', 0);
 
-          const [[isNotCancelObj]] = await connection.execute(
-            `SELECT EXISTS(SELECT 1 FROM customtourguestdetails WHERE guestId = ? AND isCancel = 0) AS existsFlag`,
-            [head.guestId]
-          );
+          const loyaltyEligible = tourCount > 0; // Equivalent to existsFlag
 
-          if (isNotCancelObj.existsFlag) {
+          if (loyaltyEligible) {
             let loyaltyPoint = 0;
-            if (tourCountObj.cnt > 1 || tourCountGtObj.cnt > 0) {
-              const [[card]] = await connection.execute(
-                `SELECT * FROM cardtype WHERE cardId = ?`,
-                [headDetails.cardId]
-              );
+            if (tourCount > 1 || tourCountGt > 0) {
+              const { data: cardArr } = await supabase
+                .from('cardtype')
+                .select('*')
+                .eq('cardId', headDetails.cardId);
+              const card = cardArr?.[0];
               loyaltyPoint = (discountDetails.discountPrice * card.selfLoyalPt) / 100;
             } else {
               loyaltyPoint = (discountDetails.discountPrice * 1) / 100;
             }
 
-            await connection.execute(
-              `INSERT INTO loyaltypoints (loyaltyPoint, description, userId, isGroupCustom, descType, enquiryId)
-               VALUES (?, 'self', ?, 2, 3, ?)`,
-              [loyaltyPoint, headDetails.userId, enqDetail.enquiryCustomId]
-            );
+            // Insert loyalty points
+            await supabase.from('loyaltypoints').insert({
+              loyaltyPoint,
+              description: 'self',
+              userId: headDetails.userId,
+              isGroupCustom: 2,
+              descType: 3,
+              enquiryId: enqDetail.enquiryCustomId
+            });
 
-            await connection.execute(
-              `UPDATE customtourenquirydetails SET isLoyaltyPointSend = 1 WHERE enquiryDetailCustomId = ?`,
-              [head.enquiryDetailCustomId]
-            );
+            // Mark as sent
+            await supabase
+              .from('customtourenquirydetails')
+              .update({ isLoyaltyPointSend: 1 })
+              .eq('enquiryDetailCustomId', head.enquiryDetailCustomId);
 
-            await connection.query(`CALL UpdateCardId(?)`, [headDetails.guestId]);
+            // Update card (replace with your Supabase function)
+            await supabase.rpc('update_card_id', { guest_id: headDetails.guestId });
 
-            // Send WhatsApp
+            // WhatsApp
             const jsonData = {
               countryCode: "+91",
               phoneNumber: discountDetails.phoneNo || '',
@@ -115,37 +130,44 @@ const dayjs = require('dayjs');
           }
         }
 
-        // Referral points
-        const [guestsDetails] = await connection.execute(
-          `SELECT * FROM customtourguestdetails WHERE enquiryCustomId = ? AND isCancel = 0`,
-          [enqDetail.enquiryCustomId]
-        );
+        // Step 4: Referral points
+        const { data: guestsDetails } = await supabase
+          .from('customtourguestdetails')
+          .select('*')
+          .eq('enquiryCustomId', enqDetail.enquiryCustomId)
+          .eq('isCancel', 0);
 
         for (const guest of guestsDetails) {
-          const [[guestCountObj]] = await connection.execute(
-            `SELECT COUNT(*) AS cnt FROM customtourguestdetails WHERE guestId = ? AND isCancel = 0`,
-            [guest.guestId]
-          );
+          const { count: guestCount } = await supabase
+            .from('customtourguestdetails')
+            .select('*', { count: 'exact', head: true })
+            .eq('guestId', guest.guestId)
+            .eq('isCancel', 0);
 
-          const [[guestGroupCountObj]] = await connection.execute(
-            `SELECT COUNT(*) AS cnt FROM grouptourguestdetails WHERE guestId = ? AND isCancel = 0`,
-            [guest.guestId]
-          );
+          const { count: guestGroupCount } = await supabase
+            .from('grouptourguestdetails')
+            .select('*', { count: 'exact', head: true })
+            .eq('guestId', guest.guestId)
+            .eq('isCancel', 0);
 
-          if (guestCountObj.cnt === 1 && guestGroupCountObj.cnt === 0) {
+          if (guestCount === 1 && guestGroupCount === 0) {
             if (guestRef && enqDetail.guestRefId === guestRef.guestId && enqDetail.guestRefId !== guest.guestId) {
-              const [[card]] = await connection.execute(
-                `SELECT * FROM cardtype WHERE cardId = ?`,
-                [guestRef.cardId]
-              );
+              const { data: cardArr } = await supabase
+                .from('cardtype')
+                .select('*')
+                .eq('cardId', guestRef.cardId);
+              const card = cardArr?.[0];
 
               const refPoint = (guest.roomShareType * card.referredLoyalPt) / 100;
 
-              await connection.execute(
-                `INSERT INTO loyaltypoints (loyaltyPoint, description, userId, isGroupCustom, descType, enquiryId)
-                 VALUES (?, 'referral', ?, 2, 4, ?)`,
-                [refPoint, guestRef.userId, enqDetail.enquiryCustomId]
-              );
+              await supabase.from('loyaltypoints').insert({
+                loyaltyPoint: refPoint,
+                description: 'referral',
+                userId: guestRef.userId,
+                isGroupCustom: 2,
+                descType: 4,
+                enquiryId: enqDetail.enquiryCustomId
+              });
 
               const jsonData = {
                 countryCode: "+91",
@@ -175,20 +197,15 @@ const dayjs = require('dayjs');
                 }
               );
 
-              await connection.query(`CALL UpdateCardIdByReferral(?)`, [guestRef.userId]);
+              await supabase.rpc('update_card_id_by_referral', { user_id: guestRef.userId });
             }
           }
         }
       }
     }
 
-    await connection.commit();
-    console.log('Loyalty Points for Custom Tour Family Head Given Successfully');
-
+    console.log('✅ Loyalty Points for Custom Tour processed successfully');
   } catch (err) {
-    await connection.rollback();
-    console.error('Error occurred:', err.message);
-  } finally {
-    await connection.end();
+    console.error('❌ Error:', err.message);
   }
 })();

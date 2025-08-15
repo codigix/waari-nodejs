@@ -1,31 +1,34 @@
 import cron from "node-cron";
-import mysql from "mysql2/promise";
 import axios from "axios";
+import { createClient } from "@supabase/supabase-js";
 
-// Create DB connection pool
-const db = mysql.createPool({
-  host: "localhost",      // change as per your DB
-  user: "root",
-  password: "",
-  database: "your_database"
-});
+// Supabase connection
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_KEY // use service role key for backend scripts
+);
 
 async function preTourCronGt() {
   try {
     // Fetch enquiry details for tours in process
-    const [enquiryDetails] = await db.query(
-      "SELECT * FROM enquirygrouptours WHERE enquiryProcess = ?",
-      [2]
-    );
+    const { data: enquiryDetails, error: enquiryErr } = await supabase
+      .from("enquirygrouptours")
+      .select("*")
+      .eq("enquiryProcess", 2);
+
+    if (enquiryErr) throw enquiryErr;
 
     for (const enquiryDetail of enquiryDetails) {
       // Fetch group tour details
-      const [groupTours] = await db.query(
-        "SELECT * FROM grouptours WHERE groupTourId = ? LIMIT 1",
-        [enquiryDetail.groupTourId]
-      );
+      const { data: groupTours, error: groupTourErr } = await supabase
+        .from("grouptours")
+        .select("*")
+        .eq("groupTourId", enquiryDetail.groupTourId)
+        .limit(1);
 
+      if (groupTourErr) throw groupTourErr;
       if (!groupTours.length) continue;
+
       const groupTour = groupTours[0];
 
       const tourStartDate = new Date(groupTour.startDate);
@@ -37,17 +40,23 @@ async function preTourCronGt() {
 
       if (currentDate === targetDate) {
         // Get family head details
-        const [familyHeadDetails] = await db.query(
-          "SELECT * FROM grouptourdiscountdetails WHERE enquiryGroupId = ?",
-          [enquiryDetail.enquiryGroupId]
-        );
+        const { data: familyHeadDetails, error: famErr } = await supabase
+          .from("grouptourdiscountdetails")
+          .select("*")
+          .eq("enquiryGroupId", enquiryDetail.enquiryGroupId);
+
+        if (famErr) throw famErr;
 
         for (const familyHeadDetail of familyHeadDetails) {
           // Check if family head cancel or not
-          const [cancelTour] = await db.query(
-            "SELECT * FROM grouptourguestdetails WHERE familyHeadGtId = ? AND isCancel = 0 LIMIT 1",
-            [familyHeadDetail.familyHeadGtId]
-          );
+          const { data: cancelTour, error: cancelErr } = await supabase
+            .from("grouptourguestdetails")
+            .select("*")
+            .eq("familyHeadGtId", familyHeadDetail.familyHeadGtId)
+            .eq("isCancel", 0)
+            .limit(1);
+
+          if (cancelErr) throw cancelErr;
 
           if (cancelTour.length > 0) {
             const messageData = {
@@ -76,6 +85,7 @@ async function preTourCronGt() {
                   }
                 }
               );
+              console.log(`Message sent to ${familyHeadDetail.phoneNo}`);
             } catch (err) {
               console.error("Error sending WhatsApp message:", err.message);
             }
@@ -90,7 +100,7 @@ async function preTourCronGt() {
   }
 }
 
-// Schedule the cron job to run daily at 10 AM (adjust as needed)
+// Schedule the cron job to run daily at 10 AM
 cron.schedule("0 10 * * *", preTourCronGt);
 
 export default preTourCronGt;

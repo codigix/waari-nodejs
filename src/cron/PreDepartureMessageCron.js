@@ -1,5 +1,5 @@
-// preDepartureMessageCron.js
-import mysql from "mysql2/promise";
+// preDepartureMessageCron.js (Supabase version)
+import { createClient } from "@supabase/supabase-js";
 import axios from "axios";
 import dotenv from "dotenv";
 import cron from "node-cron";
@@ -7,29 +7,29 @@ import path from "path";
 
 dotenv.config();
 
-// MySQL Connection
-const db = await mysql.createPool({
-  host: process.env.DB_HOST,
-  user: process.env.DB_USERNAME,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_DATABASE,
-});
+// Supabase connection
+const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
 
 async function preDepartureMessageCron() {
   try {
     // 1. Fetch enquiry details for tours in process
-    const [enquiryDetails] = await db.query(
-      "SELECT * FROM enquirygrouptours WHERE enquiryProcess = 2"
-    );
+    const { data: enquiryDetails, error: enquiryError } = await supabase
+      .from("enquirygrouptours")
+      .select("*")
+      .eq("enquiryProcess", 2);
+
+    if (enquiryError) throw enquiryError;
 
     for (let enquiry of enquiryDetails) {
       // 2. Get group tour details
-      const [groupTourResult] = await db.query(
-        "SELECT * FROM grouptours WHERE groupTourId = ? LIMIT 1",
-        [enquiry.groupTourId]
-      );
+      const { data: groupTourResult, error: groupTourError } = await supabase
+        .from("grouptours")
+        .select("*")
+        .eq("groupTourId", enquiry.groupTourId)
+        .limit(1);
 
-      if (groupTourResult.length === 0) continue;
+      if (groupTourError) throw groupTourError;
+      if (!groupTourResult.length) continue;
 
       const groupTour = groupTourResult[0];
 
@@ -44,23 +44,27 @@ async function preDepartureMessageCron() {
       if (currentDate !== targetDate) continue;
 
       // 4. Get family head details
-      const [familyHeads] = await db.query(
-        "SELECT * FROM grouptourdiscountdetails WHERE enquiryGroupId = ?",
-        [enquiry.enquiryGroupId]
-      );
+      const { data: familyHeads, error: familyHeadsError } = await supabase
+        .from("grouptourdiscountdetails")
+        .select("*")
+        .eq("enquiryGroupId", enquiry.enquiryGroupId);
+
+      if (familyHeadsError) throw familyHeadsError;
 
       for (let familyHead of familyHeads) {
         // Check if not cancelled
-        const [isNotCancelled] = await db.query(
-          "SELECT * FROM grouptourguestdetails WHERE familyHeadGtId = ? AND isCancel = 0 LIMIT 1",
-          [familyHead.familyHeadGtId]
-        );
+        const { data: isNotCancelled, error: cancelError } = await supabase
+          .from("grouptourguestdetails")
+          .select("*")
+          .eq("familyHeadGtId", familyHead.familyHeadGtId)
+          .eq("isCancel", 0)
+          .limit(1);
 
-        if (isNotCancelled.length === 0) continue;
+        if (cancelError) throw cancelError;
+        if (!isNotCancelled.length) continue;
 
-        // File name (max 30 chars, remove query string if present)
+        // File name
         let fileName = path.basename(groupTour.pdfUrl).substring(0, 30);
-
         const pdfPath = `${process.env.APP_LOCAL_URL}${groupTour.pdfUrl}`;
 
         // WhatsApp message data
@@ -83,7 +87,7 @@ async function preDepartureMessageCron() {
           await axios.post("https://api.interakt.ai/v1/public/message/", messageData, {
             headers: {
               "Content-Type": "application/json",
-              "Authorization":
+              Authorization:
                 "Basic eTBPQnZHN2dSd3lvVW1HdXlqS2o5Y3FlNG9uQXQ2b3R0UkNLYjlDRmU3Zzo=",
             },
           });
@@ -100,11 +104,8 @@ async function preDepartureMessageCron() {
   }
 }
 
-// Schedule it to run every day at 10 AM
+// Schedule every day at 10 AM
 cron.schedule("0 10 * * *", () => {
   console.log("🚀 Running Pre-departure Message Cron...");
   preDepartureMessageCron();
 });
-
-// For manual run (uncomment below line)
-// preDepartureMessageCron();
