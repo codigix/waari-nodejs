@@ -6,41 +6,46 @@ const http = require('http');
 const socketIo = require('socket.io');
 const { createClient } = require('@supabase/supabase-js');
 
-// ===== Supabase Connection =====
-const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY // Keep private in backend only!
-);
-
-// ===== Express + Socket.io Setup =====
 const app = express();
 const server = http.createServer(app);
-const io = socketIo(server);
 
-// ✅ Enable CORS for React frontend
+// ✅ Supabase client
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_ROLE_KEY // Must be backend only
+);
+
+// ✅ Socket.io with CORS
+const io = socketIo(server, {
+  cors: {
+    origin: process.env.CLIENT_ORIGIN || 'http://localhost:5173',
+    methods: ['GET', 'POST'],
+    credentials: true
+  }
+});
+
+// ✅ Middleware
 app.use(cors({
-  origin: 'http://localhost:5173', // React dev server
+  origin: process.env.CLIENT_ORIGIN || 'http://localhost:5173',
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   credentials: true
 }));
-
-// ✅ Body Parsers
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// ===== Default Route =====
+// ===== Default Test Route =====
 app.get('/', (req, res) => {
   res.send('Hello from Node.js + Socket.io + Supabase');
 });
 
-// ===== Test Supabase Connection =====
+// ===== Supabase Test Route =====
 app.get('/api/users', async (req, res) => {
   const { data, error } = await supabase.from('users').select('*');
   if (error) return res.status(500).json({ error: error.message });
   res.json(data);
 });
 
-// ===== Login API for Postman testing =====
+// ===== Login API (Plain Passwords for Now) =====
 app.post('/api/user-login', async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -49,29 +54,36 @@ app.post('/api/user-login', async (req, res) => {
       return res.status(400).json({ error: 'Email and password are required' });
     }
 
-    // ✅ Query Supabase users table
-    const { data: users, error } = await supabase
+    // ⚠️ WARNING: Plain-text password! Replace with hashed login in production
+    const { data: user, error } = await supabase
       .from('users')
       .select('*')
       .eq('email', email)
-      .eq('password', password); // ⚠️ For demo only; hash in real app
+      .eq('password', password)
+      .single();
 
-    if (error) {
-      return res.status(500).json({ error: error.message });
+    if (error && error.code !== 'PGRST116') {
+      console.error("🛑 Supabase error:", error.message);
+      return res.status(500).json({ error: 'Server error. Try again later.' });
     }
 
-    if (!users || users.length === 0) {
-      return res.status(401).json({ error: 'Invalid credentials' });
+    if (!user) {
+      console.warn("❌ Login failed for:", email, password);
+      return res.status(401).json({ error: 'Invalid email or password' });
     }
 
-    return res.json({ message: 'Login successful', user: users[0] });
+    return res.json({
+      message: 'Login successful',
+      user
+    });
 
   } catch (err) {
+    console.error("🔥 Unexpected server error:", err.message);
     return res.status(500).json({ error: err.message });
   }
 });
 
-// ===== Import Routes =====
+// ===== Route Imports =====
 const salesRoutes = require('./src/routes/sales.routes');
 const adminRoutes = require('./src/routes/admin.routes');
 const couponsRoutes = require('./src/routes/couponsRoutes');
@@ -85,7 +97,7 @@ const commonRoutes = require('./src/routes/common.routes');
 const testRoutes = require('./src/routes/testRoute');
 const tourRoutes = require('./src/routes/tourRoutes');
 
-// ===== Use Existing Routes =====
+// ===== Mount Routes =====
 app.use('/api/sales', salesRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/coupon', couponsRoutes);
@@ -101,14 +113,24 @@ app.use('/api/tour', tourRoutes);
 
 // ===== Socket.io Connection =====
 io.on('connection', (socket) => {
-  console.log('A user connected');
+  console.log('🟢 A user connected');
+
   socket.on('disconnect', () => {
-    console.log('User disconnected');
+    console.log('🔴 User disconnected');
   });
 });
+
+// ===== Serve Frontend in Production =====
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static(path.join(__dirname, 'client', 'dist')));
+
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'client', 'dist', 'index.html'));
+  });
+}
 
 // ===== Start Server =====
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
-  console.log(`✅ Server running on http://localhost:${PORT}`);
+  console.log(`✅ Server running at http://localhost:${PORT}`);
 });

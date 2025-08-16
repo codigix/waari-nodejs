@@ -1,31 +1,43 @@
-// const { createClient } = require("@supabase/supabase-js");
+const bcrypt = require("bcrypt");
 require("dotenv").config();
-
-// Connect to Supabase
 const supabase = require("../../database/supabaseClient");
-// ✅ Admin login
+
+// ✅ Admin Login
 const adminLogin = async (req, res) => {
     try {
         const { email, password } = req.body;
 
+        // 🔍 Fetch admin by email
         const { data: admin, error } = await supabase
             .from("admins")
             .select("*")
             .eq("email", email)
-            .eq("password", password) // ⚠️ For production: hash & compare instead
             .single();
 
         if (error || !admin) {
             return res.status(401).json({ message: "Invalid email or password" });
         }
 
-        res.json({ message: "Login successful", admin });
+        // 🔐 Validate password using bcrypt
+        const passwordMatch = await bcrypt.compare(password, admin.password);
+        if (!passwordMatch) {
+            return res.status(401).json({ message: "Invalid email or password" });
+        }
+
+        // 🧼 Remove password before sending response
+        const { password: _, ...adminData } = admin;
+
+        res.status(200).json({
+            message: "Login successful",
+            admin: adminData,
+        });
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        console.error("Login error:", err.message);
+        res.status(500).json({ error: "Internal server error" });
     }
 };
 
-// ✅ Add tour code
+// ✅ Add Tour Code
 const tourCode = async (req, res) => {
     try {
         const { tourCodeName, tourCodeImage } = req.body;
@@ -35,30 +47,36 @@ const tourCode = async (req, res) => {
             .insert([{ name: tourCodeName, image: tourCodeImage }])
             .select();
 
-        if (error) throw error;
+        if (error) {
+            throw error;
+        }
 
-        res.json({ message: "Tour code added", data });
+        res.status(200).json({ message: "Tour code added", data });
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        console.error("Add tour code error:", err.message);
+        res.status(500).json({ error: "Internal server error" });
     }
 };
 
-// ✅ View sales data
+// ✅ View Sales Data
 const viewSalesData = async (req, res) => {
     try {
         const { data, error } = await supabase
             .from("sales")
             .select("*");
 
-        if (error) throw error;
+        if (error) {
+            throw error;
+        }
 
-        res.json({ sales: data });
+        res.status(200).json({ sales: data });
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        console.error("View sales error:", err.message);
+        res.status(500).json({ error: "Internal server error" });
     }
 };
 
-// ✅ Delete tour type
+// ✅ Delete Tour Type
 const deleteTourType = async (req, res) => {
     try {
         const { id } = req.params;
@@ -68,17 +86,21 @@ const deleteTourType = async (req, res) => {
             .delete()
             .eq("id", id);
 
-        if (error) throw error;
+        if (error) {
+            throw error;
+        }
 
-        res.json({ message: "Tour type deleted successfully" });
+        res.status(200).json({ message: "Tour type deleted successfully" });
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        console.error("Delete tour type error:", err.message);
+        res.status(500).json({ error: "Internal server error" });
     }
 };
 
+// 📦 Export all handlers
 module.exports = {
     adminLogin,
     tourCode,
     viewSalesData,
-    deleteTourType
+    deleteTourType,
 };
